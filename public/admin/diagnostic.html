@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Diagnostic Tool</title>
+  <style>
+    body {
+      font-family: 'Poppins', system-ui, -apple-system;
+      background: linear-gradient(135deg, #0a0f1f 0%, #0d1425 50%, #0a0f1f 100%);
+      color: #f1f5fb;
+      padding: 40px 20px;
+      margin: 0;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: #E91E8C;
+      margin-bottom: 10px;
+    }
+    
+    .section {
+      background: linear-gradient(135deg, rgba(26, 40, 71, 0.4) 0%, rgba(15, 23, 41, 0.2) 100%);
+      border: 1px solid rgba(224, 230, 242, 0.1);
+      padding: 24px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+    
+    .section h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0 0 16px 0;
+      color: #E91E8C;
+    }
+    
+    .test-item {
+      background: rgba(10, 15, 31, 0.5);
+      border: 1px solid rgba(224, 230, 242, 0.1);
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .test-name {
+      font-weight: 600;
+    }
+    
+    .test-status {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .status-loading {
+      background: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+    }
+    
+    .status-success {
+      background: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+    }
+    
+    .status-error {
+      background: rgba(255, 107, 157, 0.2);
+      color: #ff6b9d;
+    }
+    
+    .result {
+      background: rgba(10, 15, 31, 0.8);
+      border: 1px solid rgba(224, 230, 242, 0.1);
+      padding: 12px;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 8px;
+      color: #b0b9c8;
+    }
+    
+    .button {
+      background: #E91E8C;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-family: inherit;
+      transition: all 0.3s ease;
+    }
+    
+    .button:hover {
+      background: #FF4DB8;
+      transform: translateY(-2px);
+    }
+    
+    .info {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔧 Admin Dashboard Diagnostic Tool</h1>
+    <p style="color: #b0b9c8; margin-bottom: 24px;">Use this tool to diagnose data fetching issues</p>
+    
+    <div class="section">
+      <h2>Authentication Status</h2>
+      <div class="test-item">
+        <span class="test-name">Admin Login Status</span>
+        <span class="test-status status-loading" id="auth-status">Checking...</span>
+      </div>
+      <div class="result" id="auth-result"></div>
+    </div>
+    
+    <div class="section">
+      <h2>API Endpoints Test</h2>
+      <div class="info">
+        ℹ️ Click "Test All" to check all API endpoints. If any fail, it indicates the issue preventing data from loading.
+      </div>
+      
+      <div class="test-item">
+        <span class="test-name">/admin/sales-data</span>
+        <span class="test-status status-loading" id="test-sales">Ready</span>
+      </div>
+      <div class="result" id="result-sales"></div>
+      
+      <div class="test-item">
+        <span class="test-name">/admin/today-orders</span>
+        <span class="test-status status-loading" id="test-today">Ready</span>
+      </div>
+      <div class="result" id="result-today"></div>
+      
+      <div class="test-item">
+        <span class="test-name">/admin/active-users</span>
+        <span class="test-status status-loading" id="test-users">Ready</span>
+      </div>
+      <div class="result" id="result-users"></div>
+      
+      <div class="test-item">
+        <span class="test-name">/admin/low-stock-items</span>
+        <span class="test-status status-loading" id="test-stock">Ready</span>
+      </div>
+      <div class="result" id="result-stock"></div>
+      
+      <div style="margin-top: 24px;">
+        <button class="button" onclick="testAll()">Test All Endpoints</button>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2>Troubleshooting Guide</h2>
+      <div style="line-height: 1.8; color: #b0b9c8; font-size: 14px;">
+        <p><strong style="color: #E91E8C;">If "Admin Login Status" shows "Not authenticated":</strong></p>
+        <ul>
+          <li>Navigate to <a href="/admin" style="color: #E91E8C; text-decoration: underline;">/admin</a> and log in</li>
+          <li>Then return to this diagnostic page and click "Test All"</li>
+        </ul>
+        
+        <p><strong style="color: #E91E8C;">If API endpoints show "Error: HTTP 500":</strong></p>
+        <ul>
+          <li>Check the backend console for database errors</li>
+          <li>Make sure the database tables exist (orders, users, products)</li>
+          <li>Verify database connection is working</li>
+        </ul>
+        
+        <p><strong style="color: #E91E8C;">If endpoints show "0 results":</strong></p>
+        <ul>
+          <li>The database connection works but there's no data</li>
+          <li>This is expected if no orders/users exist yet</li>
+          <li>Create some sample orders and try again</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function checkAuthStatus() {
+      try {
+        const res = await fetch('/admin/auth-status', { credentials: 'include' });
+        const data = await res.json();
+        
+        const statusEl = document.getElementById('auth-status');
+        const resultEl = document.getElementById('auth-result');
+        
+        if (data.authenticated) {
+          statusEl.className = 'test-status status-success';
+          statusEl.textContent = '✓ Authenticated';
+          resultEl.textContent = `User: ${data.email}\nAdmin ID: ${data.adminId}\nMessage: ${data.message}`;
+        } else {
+          statusEl.className = 'test-status status-error';
+          statusEl.textContent = '✗ Not Authenticated';
+          resultEl.textContent = data.message;
+        }
+      } catch (e) {
+        document.getElementById('auth-status').className = 'test-status status-error';
+        document.getElementById('auth-status').textContent = '✗ Error';
+        document.getElementById('auth-result').textContent = e.message;
+      }
+    }
+
+    async function testEndpoint(name, url, statusId, resultId) {
+      const statusEl = document.getElementById(statusId);
+      const resultEl = document.getElementById(resultId);
+      
+      statusEl.className = 'test-status status-loading';
+      statusEl.textContent = 'Testing...';
+      resultEl.textContent = '';
+      
+      try {
+        const res = await fetch(url, { credentials: 'include' });
+        const data = await res.json();
+        
+        if (!res.ok) {
+          statusEl.className = 'test-status status-error';
+          statusEl.textContent = `✗ ${res.status}`;
+          resultEl.textContent = JSON.stringify(data, null, 2);
+        } else {
+          const itemCount = data.orders?.length || data.users?.length || data.products?.length || 0;
+          statusEl.className = 'test-status status-success';
+          statusEl.textContent = `✓ OK (${itemCount} items)`;
+          resultEl.textContent = JSON.stringify(data, null, 2).substring(0, 500) + '...';
+        }
+      } catch (e) {
+        statusEl.className = 'test-status status-error';
+        statusEl.textContent = '✗ Error';
+        resultEl.textContent = e.message;
+      }
+    }
+
+    async function testAll() {
+      checkAuthStatus();
+      await new Promise(r => setTimeout(r, 500));
+      
+      await testEndpoint('Sales Data', '/admin/sales-data', 'test-sales', 'result-sales');
+      await testEndpoint('Today Orders', '/admin/today-orders', 'test-today', 'result-today');
+      await testEndpoint('Active Users', '/admin/active-users', 'test-users', 'result-users');
+      await testEndpoint('Low Stock', '/admin/low-stock-items', 'test-stock', 'result-stock');
+    }
+
+    // Check auth status on page load
+    checkAuthStatus();
+  </script>
+</body>
+</html>

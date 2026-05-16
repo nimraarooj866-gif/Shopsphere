@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Thank you - Shopsphere</title>
+
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg-grad: linear-gradient(135deg,#ffdde1,#ee9ca7);
+      --card-bg: #fff;
+      --accent: #ff758c;
+      --accent-2: #e8436f;
+      --muted: #6b6b6b;
+      --radius: 14px;
+      --shadow: 0 16px 40px rgba(0,0,0,0.08);
+      --max-width: 880px;
+    }
+
+    html,body{height:100%; margin:0;}
+    body{
+      font-family: 'Poppins', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: var(--bg-grad);
+      color:#222;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-start;
+      min-height:100vh;
+      padding:32px 20px;
+    }
+
+    .thank-wrap{
+      width:100%;
+      max-width:var(--max-width);
+      display:flex;
+      gap:26px;
+      align-items:flex-start;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin:20px 0;
+    }
+
+    .hero-card{
+      position:relative;
+      flex:1 1 560px;
+      background:var(--card-bg);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:34px;
+      display:flex;
+      gap:20px;
+      align-items:flex-start;
+      overflow:visible;
+    }
+
+    .badge{
+      width:84px;
+      height:84px;
+      border-radius:50%;
+      background:linear-gradient(180deg,var(--accent),var(--accent-2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      font-size:38px;
+      font-weight:700;
+      box-shadow:0 8px 26px rgba(232,67,111,0.18);
+      flex-shrink:0;
+      margin-top:-48px;
+      border:6px solid rgba(255,255,255,0.7);
+    }
+
+    .content{
+      flex:1;
+    }
+
+    .title{
+      font-size:22px;
+      font-weight:700;
+      margin:2px 0 8px 0;
+      color:#1f1f1f;
+    }
+
+    .subtitle{
+      color:var(--muted);
+      margin-bottom:14px;
+      font-size:14px;
+    }
+
+    .order-info{
+      display:flex;
+      gap:18px;
+      flex-wrap:wrap;
+      margin-top:8px;
+    }
+
+    .info-card{
+      background:#fbfbfb;
+      border-radius:10px;
+      padding:12px 14px;
+      min-width:160px;
+      box-shadow:0 6px 18px rgba(0,0,0,0.03);
+    }
+    .info-card strong{ display:block; font-size:13px; color:#444; margin-bottom:6px; }
+    .info-card .value{ font-weight:700; color:#111; font-size:16px; }
+
+    .actions{
+      margin-top:18px;
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .btn{
+      padding:10px 16px;
+      border-radius:8px;
+      border:0;
+      font-weight:700;
+      cursor:pointer;
+    }
+    .btn.primary{
+      background:#C84771;
+      color:#fff;
+      box-shadow:none;
+    }
+    .btn.ghost{
+      background:#C84771;
+      color:#fff;
+      border:0;
+    }
+
+    /* right column - order summary list */
+    .summary{
+      width:320px;
+      min-width:260px;
+      background:var(--card-bg);
+      border-radius:var(--radius);
+      padding:20px;
+      box-shadow:var(--shadow);
+      height:fit-content;
+    }
+    .summary h3{ margin:0 0 10px 0; font-size:16px; color:#222; }
+    .item-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:8px 0; border-bottom:1px dashed #f1f1f1; }
+    .item-row:last-child{ border-bottom:0; }
+    .item-meta{ max-width:180px; font-size:14px; color:#222; font-weight:600; }
+    .item-price{ font-weight:700; color:#111; }
+
+    .summary .totals{ margin-top:12px; padding-top:12px; border-top:1px solid #f4f4f4; }
+    .totals .row{ display:flex; justify-content:space-between; margin:8px 0; font-weight:600; color:#333; }
+    .totals .row.small{ font-weight:500; color:var(--muted); }
+
+    .note{ font-size:13px; color:var(--muted); margin-top:10px; }
+
+    /* responsive */
+    @media (max-width:980px){
+      .thank-wrap{ flex-direction:column; padding:18px 0; }
+      .summary{ width:100%; max-width:640px; }
+      .hero-card{ width:100%; }
+    }
+
+    /* subtle link style */
+    a.link-like{ color:var(--accent); text-decoration:none; font-weight:700; }
+
+    /* Chatbot styles */
+    #chatbotIcon { position: fixed; right: 20px; bottom: 20px; width:56px; height:56px; border-radius:50%; background: linear-gradient(90deg,#ff6f88,#ff8fa0); display:flex; align-items:center; justify-content:center; color:#fff; font-size:22px; box-shadow:0 12px 30px rgba(255,111,136,0.18); cursor:pointer; z-index:120; transition: transform 0.2s; }
+    #chatbotIcon:hover { transform: scale(1.1); }
+    #chatbotIcon:active { transform: scale(0.98); }
+    #chatWindow { position: fixed; right: 92px; bottom: 22px; width:320px; max-width:calc(100% - 48px); background:#fff; border-radius:12px; box-shadow:0 18px 40px rgba(0,0,0,0.12); overflow:hidden; display:none; z-index:120; }
+    #chatWindow header{ padding:12px 14px; background: linear-gradient(90deg,#ff6f88,#ff8fa0); color:#fff; display:flex; justify-content:space-between; align-items:center; }
+    #chatWindow .messages{ padding:12px; max-height:240px; overflow:auto; background:#faf5f7; }
+    #chatWindow .chat-input{ display:flex; gap:8px; padding:10px; border-top:1px solid #f2f0f1; background:#fff; }
+    #chatWindow .chat-input input{ flex:1; padding:8px 10px; border-radius:8px; border:1px solid #eee; outline:none; }
+    @media (max-width:720px){ #chatWindow{ right:12px; left:12px; bottom:86px; width:auto; } }
+
+  </style>
+</head>
+<body>
+  <div class="thank-wrap" role="main">
+    <div class="hero-card" aria-live="polite">
+      <div class="badge" aria-hidden="true">✓</div>
+
+      <div class="content">
+        <div class="title" id="thank-title">Thank you for your order!</div>
+        <div class="subtitle" id="thank-sub">We have received your order and it is being processed.</div>
+
+        <div class="order-info">
+          <div class="info-card">
+            <strong>Order ID</strong>
+            <div class="value" id="oid">—</div>
+          </div>
+
+          <div class="info-card">
+            <strong>Total</strong>
+            <div class="value" id="ototal">—</div>
+          </div>
+
+          <div class="info-card">
+            <strong>Payment</strong>
+            <div class="value" id="opayment">—</div>
+          </div>
+        </div>
+
+        <div class="actions" aria-hidden="false">
+          <button class="btn primary" id="continue-btn">Continue shopping</button>
+          <button class="btn ghost" id="view-order-btn">View order</button>
+        </div>
+
+        <p class="note" id="extra-note">You'll get an email confirmation shortly.</p>
+      </div>
+    </div>
+
+    <aside class="summary" aria-labelledby="summary-title">
+      <h3 id="summary-title">Order Summary</h3>
+      <div id="summary-items" aria-live="polite"></div>
+
+      <div class="totals">
+        <div class="row small"><span>Subtotal</span><span id="sum-sub">Rs.0</span></div>
+        <div class="row small"><span>Shipping</span><span id="sum-ship">Rs.0</span></div>
+        <div class="row"><strong>Total</strong><strong id="sum-total">Rs.0</strong></div>
+      </div>
+
+      <p class="note">If you have questions, reply to the confirmation email or contact us at <a href="mailto:support@shopsphere.example" class="link-like">support@shopsphere.example</a>.</p>
+    </aside>
+  </div>
+
+  <script>
+    // Read order id from query parameter
+    function getQueryParam(name) {
+      return new URLSearchParams(window.location.search).get(name);
+    }
+
+    const oid = getQueryParam('order');
+    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+
+    let order = null;
+    if (oid) {
+      order = orders.find(o => String(o.id) === String(oid));
+    }
+    // Fallback: use most recent order
+    if (!order && orders.length) order = orders[0];
+
+    const elOid = document.getElementById('oid');
+    const elTotal = document.getElementById('ototal');
+    const elPayment = document.getElementById('opayment');
+    const itemsWrap = document.getElementById('summary-items');
+    const sumSub = document.getElementById('sum-sub');
+    const sumShip = document.getElementById('sum-ship');
+    const sumTot = document.getElementById('sum-total');
+
+    function formatPKR(n){
+      return 'Rs.' + Number(n || 0).toLocaleString();
+    }
+
+    if (order) {
+      elOid.textContent = order.id;
+      elTotal.textContent = formatPKR(order.total);
+      elPayment.textContent = order.method || '—';
+
+      itemsWrap.innerHTML = '';
+      (order.items || []).forEach(it => {
+        const row = document.createElement('div');
+        row.className = 'item-row';
+        row.innerHTML = `<div class="item-meta"><div style="font-weight:600">${escapeHtml(it.name)}</div><div class="order-qty" style="font-size:13px;color:${'var(--muted)'}">Qty: ${it.quantity}</div></div><div class="item-price">${formatPKR((Number(it.price)||0) * (Number(it.quantity)||0))}</div>`;
+        itemsWrap.appendChild(row);
+      });
+
+      // totals
+      const subtotal = (order.items || []).reduce((s,it)=> s + (Number(it.price)||0)*(Number(it.quantity)||0), 0);
+      const shipping = Number(order.shipping) || 0;
+      sumSub.textContent = formatPKR(subtotal);
+      sumShip.textContent = formatPKR(shipping);
+      sumTot.textContent = formatPKR(subtotal + shipping);
+    } else {
+      // No order found
+      elOid.textContent = '—';
+      elTotal.textContent = 'Rs.0';
+      elPayment.textContent = '—';
+      itemsWrap.innerHTML = '<p style="color:#777">No order details found.</p>';
+      sumSub.textContent = 'Rs.0';
+      sumShip.textContent = 'Rs.0';
+      sumTot.textContent = 'Rs.0';
+    }
+
+    // Buttons
+    document.getElementById('continue-btn').addEventListener('click', () => {
+      window.location.href = 'products.html';
+    });
+    document.getElementById('view-order-btn').addEventListener('click', () => {
+      if (order) {
+        // If you have an order details page, redirect there; otherwise show order list
+        window.location.href = 'order.html?id=' + encodeURIComponent(order.id);
+      } else {
+        // fallback to orders list or home
+        window.location.href = 'products.html';
+      }
+    });
+
+    // small XSS-safe helper
+    function escapeHtml(s){ return String(s || '').replace(/[&<>"']/g, (m)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+  </script>
+
+  <!-- Chatbot icon -->
+  <div class="chatbot-icon" id="chatbotToggle" role="button" aria-label="Open chat" title="Chat with us">💬</div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Details - Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../style.css" />
+  <style>
+    :root {
+      --primary-dark: #0a0f1f;
+      --secondary-dark: #0f1729;
+      --card-dark: #1a2847;
+      --accent: #E91E8C;
+      --accent-light: #FF4DB8;
+      --text-primary: #f1f5fb;
+      --text-secondary: #b0b9c8;
+      --text-muted: #8a92a1;
+      --border: rgba(224, 230, 242, 0.1);
+      --success: #10b981;
+      --warning: #f59e0b;
+      --info: #3b82f6;
+      --spacing-lg: 16px;
+      --spacing-xl: 24px;
+      --spacing-2xl: 28px;
+      --spacing-3xl: 36px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; padding: 0; font-family: 'Poppins', system-ui; color: var(--text-primary); background: linear-gradient(135deg, var(--primary-dark) 0%, #0d1425 50%, #0a0f1f 100%); }
+    .app { display: flex; min-height: 100vh; background: var(--primary-dark); }
+    .sidebar { position: fixed; left: 0; top: 0; width: 280px; height: 100vh; background: linear-gradient(180deg, rgba(15, 23, 41, 0.95) 0%, rgba(10, 15, 31, 0.98) 100%); border-right: 1px solid var(--border); padding: var(--spacing-xl) var(--spacing-lg); overflow-y: auto; z-index: 100; }
+    .sidebar::-webkit-scrollbar { width: 6px; }
+    .sidebar::-webkit-scrollbar-thumb { background: rgba(224, 230, 242, 0.1); border-radius: 3px; }
+    .logo { display: flex; align-items: center; gap: 8px; margin-bottom: var(--spacing-2xl); padding-bottom: var(--spacing-xl); border-bottom: 1px solid var(--border); }
+    .logo img { width: 48px; height: 48px; border-radius: 8px; }
+    .logo h3 { margin: 0; font-size: 16px; font-weight: 700; }
+    .nav { display: flex; flex-direction: column; gap: 8px; }
+    .nav a { color: var(--text-secondary); text-decoration: none; padding: 8px 16px; border-radius: 8px; font-weight: 500; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.3s ease; }
+    .nav a:hover { color: var(--text-primary); background: rgba(233, 30, 140, 0.08); }
+    .main { margin-left: 280px; padding: var(--spacing-3xl); flex: 1; overflow-y: auto; height: 100vh; }
+    .main::-webkit-scrollbar { width: 8px; }
+    .main::-webkit-scrollbar-thumb { background: rgba(224, 230, 242, 0.08); border-radius: 4px; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-2xl); }
+    .header h1 { margin: 0; font-size: 28px; font-weight: 700; }
+    .back-btn { background: linear-gradient(135deg, rgba(233, 30, 140, 0.15) 0%, rgba(233, 30, 140, 0.05) 100%); border: 1px solid rgba(233, 30, 140, 0.2); color: var(--accent); padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-family: inherit; }
+    .back-btn:hover { background: linear-gradient(135deg, rgba(233, 30, 140, 0.25) 0%, rgba(233, 30, 140, 0.1) 100%); transform: translateY(-2px); }
+    .card { background: linear-gradient(135deg, rgba(26, 40, 71, 0.4) 0%, rgba(15, 23, 41, 0.2) 100%); border: 1px solid var(--border); padding: var(--spacing-xl); border-radius: 12px; margin-bottom: var(--spacing-xl); }
+    .order-header { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-lg); margin-bottom: var(--spacing-xl); }
+    .info-box { background: rgba(233, 30, 140, 0.05); border: 1px solid rgba(233, 30, 140, 0.2); padding: var(--spacing-lg); border-radius: 8px; }
+    .info-label { color: var(--text-muted); font-size: 12px; font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
+    .info-value { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+    .status-badge { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: capitalize; }
+    .status-badge.pending { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+    .status-badge.shipped { background: rgba(59, 130, 246, 0.2); color: var(--info); }
+    .status-badge.delivered { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+    .status-badge.cancelled { background: rgba(255, 107, 157, 0.2); color: #ff6b9d; }
+    table { width: 100%; border-collapse: collapse; margin-top: var(--spacing-lg); }
+    thead { background: rgba(233, 30, 140, 0.08); }
+    th { padding: 12px 16px; text-align: left; font-weight: 600; color: var(--text-primary); border-bottom: 1px solid var(--border); }
+    td { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+    .loading { text-align: center; padding: var(--spacing-2xl); color: var(--text-muted); }
+    .status-select { background: linear-gradient(135deg, rgba(26, 40, 71, 0.4) 0%, rgba(15, 23, 41, 0.2) 100%); border: 1px solid var(--border); color: var(--text-primary); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-family: inherit; }
+    .update-btn { background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-family: inherit; transition: all 0.3s ease; }
+    .update-btn:hover { background: var(--accent-light); }
+    @media (max-width: 768px) {
+      .sidebar { width: 70px; }
+      .sidebar .logo h3, .nav a span { display: none; }
+      .main { margin-left: 70px; padding: var(--spacing-lg); }
+      .header { flex-direction: column; gap: var(--spacing-lg); }
+      th, td { padding: 8px; font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">
+        <img src="../../images/shopsphere-logo.svg" alt="ShopSphere">
+        <h3>ShopSphere</h3>
+      </div>
+      <nav class="nav">
+        <a href="/admin/dashboard">
+          <div class="nav-icon">📊</div>
+          <span>Dashboard</span>
+        </a>
+        <a href="/admin/products">
+          <div class="nav-icon">📦</div>
+          <span>Products</span>
+        </a>
+        <a href="/admin/banners">
+          <div class="nav-icon">🎨</div>
+          <span>Banners</span>
+        </a>
+        <a href="/admin/orders">
+          <div class="nav-icon">🛒</div>
+          <span>Orders</span>
+        </a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="header">
+        <div>
+          <h1 id="page-title">Order Details</h1>
+        </div>
+        <button class="back-btn" onclick="window.history.back()">← Back</button>
+      </div>
+
+      <div id="loading" class="loading">Loading order details...</div>
+      <div id="content" style="display: none;">
+        <div class="card">
+          <div class="order-header">
+            <div class="info-box">
+              <div class="info-label">Order ID</div>
+              <div class="info-value" id="order-id">—</div>
+            </div>
+            <div class="info-box">
+              <div class="info-label">Customer</div>
+              <div class="info-value" id="customer-name">—</div>
+            </div>
+            <div class="info-box">
+              <div class="info-label">Email</div>
+              <div class="info-value" id="customer-email">—</div>
+            </div>
+            <div class="info-box">
+              <div class="info-label">Order Date</div>
+              <div class="info-value" id="order-date">—</div>
+            </div>
+            <div class="info-box">
+              <div class="info-label">Status</div>
+              <div class="info-value">
+                <select class="status-select" id="status-select">
+                  <option value="pending">Pending</option>
+                  <option value="shipped">Shipped</option>
+                  <option value="delivered">Delivered</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
+            </div>
+            <div class="info-box">
+              <div class="info-label">Total Amount</div>
+              <div class="info-value" id="total-amount">—</div>
+            </div>
+          </div>
+
+          <h3 style="margin: var(--spacing-lg) 0 var(--spacing-md) 0; color: var(--text-primary);">Shipping Address</h3>
+          <div style="background: rgba(233, 30, 140, 0.05); padding: var(--spacing-lg); border-radius: 8px; margin-bottom: var(--spacing-xl);">
+            <p id="shipping-address" style="margin: 0; line-height: 1.6;">—</p>
+          </div>
+
+          <h3 style="margin: var(--spacing-lg) 0 var(--spacing-md) 0; color: var(--text-primary);">Order Items</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+            <tbody id="items-body"></tbody>
+          </table>
+
+          <div style="display: flex; gap: var(--spacing-lg); margin-top: var(--spacing-xl);">
+            <button class="update-btn" onclick="updateOrderStatus()">Update Status</button>
+            <button class="update-btn" style="background: var(--info);" onclick="window.print()">🖨️ Print Order</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const orderId = window.location.pathname.split('/').pop();
+
+    async function loadOrderDetails() {
+      try {
+        const res = await fetch(`/admin/order/${orderId}`, { credentials: 'include' });
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({ message: 'Unknown error' }));
+          throw new Error(errorData.message || `HTTP ${res.status}: ${res.statusText}`);\n        }
+        const data = await res.json();
+        renderOrder(data.order);
+      } catch (e) {
+        console.error('Error:', e);
+        document.getElementById('loading').textContent = 'Error: ' + e.message + ' (Check browser console for details)';
+      }
+    }
+
+    function renderOrder(order) {
+      document.getElementById('page-title').textContent = `Order #${order.id}`;
+      document.getElementById('order-id').textContent = `#${order.id}`;
+      document.getElementById('customer-name').textContent = order.customerName || '—';
+      document.getElementById('customer-email').textContent = order.customerEmail || '—';
+      document.getElementById('order-date').textContent = order.date || '—';
+      document.getElementById('total-amount').textContent = '$' + (order.total || 0).toFixed(2);
+      document.getElementById('status-select').value = order.status.toLowerCase();
+      document.getElementById('shipping-address').textContent = order.shippingAddress || '—';
+
+      const itemsBody = document.getElementById('items-body');
+      itemsBody.innerHTML = '';
+      (order.items || []).forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${item.productName || '—'}</td>
+          <td>${item.quantity}</td>
+          <td>$${(item.price || 0).toFixed(2)}</td>
+          <td>$${(item.quantity * item.price || 0).toFixed(2)}</td>
+        `;
+        itemsBody.appendChild(tr);
+      });
+
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('content').style.display = 'block';
+    }
+
+    async function updateOrderStatus() {
+      const newStatus = document.getElementById('status-select').value;
+      try {
+        const res = await fetch(`/admin/order/${orderId}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ status: newStatus })
+        });
+        if (res.ok) {
+          alert('Order status updated successfully!');
+          loadOrderDetails();
+        } else {
+          alert('Failed to update order status.');
+        }
+      } catch (e) {
+        console.error('Error:', e);
+        alert('Error updating status: ' + e.message);
+      }
+    }
+
+    loadOrderDetails();
+  </script>
+</body>
+</html>

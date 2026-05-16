@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Products - Shopsphere</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Small page-specific styles to restore the search look from the screenshot */
+    header {
+      width: 100%;
+      background: linear-gradient(135deg, #C84771, #a83a5a);
+      padding: 12px 20px;
+      box-shadow: 
+        0 8px 16px rgba(200, 71, 113, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      border: none;
+      border-radius: 0 0 20px 20px;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    header .header-logo {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+      border-radius: 4px;
+    }
+    .header-brand {
+      font-size: 18px;
+      color: #fff;
+      margin: 0;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      font-family: 'Times New Roman', Times, serif;
+    }
+    .inner {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+    }
+    .inner h1 {
+      font-size: 30px;
+      color: #fff;
+      margin: 0 0 4px 0;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      font-family: 'Times New Roman', Times, serif;
+    }
+    .inner nav {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 2px;
+    }
+    .inner nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      opacity: 0.9;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      font-family: 'Times New Roman', Times, serif;
+    }
+    .inner nav a:hover {
+      opacity: 0.6;
+    }
+
+    /* Cart icon on the right */
+    .cart-icon-btn {
+      background: transparent;
+      border: none;
+      color: #fff;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+    .search-bar {
+      display:flex;
+      gap:12px;
+      align-items:center;
+      width: 100%;
+      max-width: 600px;
+      padding: 6px;
+    }
+    .search-bar input[type="text"]{
+      flex:1;
+      padding: 14px 18px;
+      border-radius: 16px;
+      border: none;
+      background: #E8F0F4;
+      font-size: 15px;
+      outline: none;
+      box-shadow: inset 4px 4px 8px #d4738f, inset -4px -4px 8px #ffffff;
+      color: #636e72;
+    }
+    .search-bar input[type="text"]::placeholder {
+      color: #636e72;
+    }
+    .search-bar input[type="text"]:focus{
+      box-shadow: inset 6px 6px 12px #d4738f, inset -6px -6px 12px #ffffff;
+    }
+    .search-bar button {
+      padding: 10px 18px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      min-width: 88px;
+      background: #C84771;
+      color: #fff;
+      box-shadow: none;
+      transition: all 0.3s ease;
+    }
+    .search-bar button:hover {
+      background: #a83a5a;
+    }
+    .search-bar button:active {
+      box-shadow: none;
+    }
+    .search-bar button.search-btn {
+      background: #C84771;
+      color: #fff;
+    }
+    .search-bar button.clear-btn {
+      background: #9E9A96;
+      color: #fff;
+      opacity: 0.7;
+    }
+    .search-bar button.clear-btn:hover {
+      opacity: 0.9;
+    }
+
+    /* small responsive tweak */
+    @media (max-width:640px){
+      .search-bar { gap:8px; padding:4px; max-width:92%; }
+      .search-bar input[type="text"] { padding:12px 12px; font-size:14px; }
+      .search-bar button { min-width:70px; padding:9px 12px; }
+      .products-header h1 { font-size:26px; }
+    }
+
+    /* Cart icon on the right */
+    .cart-icon-btn {
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      color: transparent;
+      width: 52px;
+      height: 52px;
+      border-radius: 18px;
+      cursor: pointer;
+      font-size: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+      flex-shrink: 0;
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12);
+      backdrop-filter: blur(10px);
+    }
+    .cart-icon-btn:hover {
+      background: rgba(255, 255, 255, 0.24);
+      transform: translateY(-1px);
+    }
+    .cart-icon-btn:active {
+      background: rgba(255, 255, 255, 0.18);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.14);
+      transform: scale(0.97);
+    }
+    .cart-icon {
+      width: 24px;
+      height: 24px;
+      display: inline-block;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 9h10l-1.5 8h-7L7 9z'/%3E%3Cpath d='M9 9V6a3 3 0 0 1 6 0v3'/%3E%3Cpath d='M10 19a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM18 19a1 1 0 1 1-2 0 1 1 0 0 1 2 0z'/%3E%3C/svg%3E");
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.18));
+    }
+    .cart-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #ff4757;
+      color: #fff;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      border: 2px solid #fff;
+      box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
+      animation: badgePulse 0.4s ease;
+    }
+    @keyframes badgePulse {
+      from {
+        transform: scale(0.5);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    .cart-icon-btn {
+      position: relative;
+    }
+
+    /* Remove any chatbot-related z-index conflicts if style.css still has chatbot styles */
+    #chatbot, #chatbot-icon { display: none !important; }
+
+    /* Filter section */
+    .filter-section {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0 20px;
+      margin-bottom: 20px;
+    }
+
+    .filter-icon-btn {
+      background: rgba(255, 255, 255, 0.3);
+      border: 2px solid rgba(255, 255, 255, 0.6);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .filter-icon-btn:hover {
+      border-color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .filter-icon-btn:active {
+      transform: scale(0.98);
+    }
+
+    .filter-icon-btn:hover {
+      border-color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .filter-icon-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Filter Modal */
+    .filter-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .filter-modal.active {
+      display: flex;
+    }
+
+    .filter-modal-content {
+      background: #fff;
+      border-radius: 16px;
+      padding: 30px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.15);
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(30px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .filter-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .filter-modal-header h3 {
+      margin: 0;
+      color: #C84771;
+      font-size: 20px;
+    }
+
+    .filter-modal-close {
+      background: transparent;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #C84771;
+    }
+
+    .filter-modal-body {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .filter-modal-btn {
+      padding: 12px 16px;
+      border: 2px solid #C84771;
+      background: transparent;
+      color: #C84771;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      text-align: left;
+    }
+
+    .filter-modal-btn:hover {
+      background: rgba(200, 71, 113, 0.1);
+    }
+
+    .filter-modal-btn.active {
+      background: #C84771;
+      color: #fff;
+    }
+
+    .filter-buttons {
+      display: none;
+    }
+
+    .filter-label {
+      display: none;
+    }
+
+    .filter-icon {
+      font-size: 20px;
+    }
+
+    .filter-btn {
+      padding: 8px 16px;
+      border: 2px solid rgba(255, 255, 255, 0.6);
+      background: transparent;
+      color: #fff;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      transition: all 0.3s ease;
+    }
+
+    .filter-btn:hover {
+      border-color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .filter-btn.active {
+      background: #fff;
+      color: #ff8fa0;
+      border-color: #fff;
+    }
+
+    @media (max-width:640px) {
+      .filter-modal-content {
+        max-width: 90%;
+      }
+    }
+
+    /* Improved grid for filtered products */
+    .products-center {
+      width: 100%;
+      padding: 0 18px;
+      max-width: 1200px;
+      margin: 0 auto;
+      min-height: 0;
+    }
+
+    #products-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      padding: 20px 0;
+      width: 100%;
+      align-items: stretch;
+    }
+
+    /* Keep single-product view consistent with grid sizing (no oversized centered card) */
+    #products-list.single-item {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      max-width: 100%;
+      margin: 0;
+      justify-items: stretch;
+      align-items: start;
+      padding-top: 8px;
+    }
+    #products-list.single-item .product{
+      max-width: 100%;
+      width:100%;
+      margin:0;
+      padding:12px;
+      text-align:left;
+      min-height:320px;
+      display:flex;
+      flex-direction:column;
+      align-items:flex-start;
+    }
+    #products-list.single-item .product img{ width:100%; height:180px; object-fit:cover; border-radius:10px; margin-bottom:10px; display:block; }
+    #products-list.single-item .product h3{ font-size:18px; margin-bottom:8px; }
+    #products-list.single-item .card-actions{ justify-content:flex-start; gap:10px; }
+  </style>
+</head>
+<body class="products-page">
+
+  <header role="banner">
+    <div class="header-left">
+      <img src="images/shopsphere-logo.svg" alt="Shopsphere Beauty and Skincare Logo" class="header-logo" style="width:60px; height:auto;">
+    </div>
+    <div class="inner">
+      <h1>Beauty and Skincare</h1>
+      <nav role="navigation" aria-label="Main">
+        <a href="index.html">Home</a>
+        <a href="products.html">Products</a>
+        <a href="cart.html">Cart</a>
+        <a href="login.html">Login</a>
+      </nav>
+    </div>
+    <button class="cart-icon-btn" id="cartIconBtn" title="Go to Cart" aria-label="Go to Cart"><span class="cart-icon" aria-hidden="true"></span><span class="cart-badge" id="cart-count">0</span></button>
+  </header>
+
+  <main class="container">
+    <!-- Restored search bar (styled like your screenshot) -->
+    <div class="search-wrap">
+      <div class="search-bar" role="search" aria-label="Search products">
+        <input type="text" id="searchBarProducts" placeholder="Search by product name..." aria-label="Search by product name">
+        <button id="searchBtnProducts" class="search-btn" aria-label="Search">Search</button>
+        <button id="clearBtnProducts" class="clear-btn" aria-label="Clear search">Clear</button>
+      </div>
+    </div>
+
+    <!-- Filter section -->
+    <div class="filter-section">
+      <button class="filter-icon-btn" id="filterIconBtn">
+        <span>🔍</span>
+        <span>Filter</span>
+      </button>
+      <div class="filter-buttons">
+        <button class="filter-btn active" data-category="all">All Products</button>
+        <button class="filter-btn" data-category="haircare">Hair Care</button>
+        <button class="filter-btn" data-category="skincare">Skin Care</button>
+        <button class="filter-btn" data-category="herbal">Herbal</button>
+      </div>
+    </div>
+
+    <!-- Filter Modal -->
+    <div class="filter-modal" id="filterModal">
+      <div class="filter-modal-content">
+        <div class="filter-modal-header">
+          <h3>Filter by Category</h3>
+          <button class="filter-modal-close" id="closeFilterModal">✕</button>
+        </div>
+        <div class="filter-modal-body">
+          <button class="filter-modal-btn active" data-category="all">All Products</button>
+          <button class="filter-modal-btn" data-category="haircare">Hair Care</button>
+          <button class="filter-modal-btn" data-category="skincare">Skin Care</button>
+          <button class="filter-modal-btn" data-category="herbal">Herbal</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="products-center">
+      <section class="products-container" id="products-list"></section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">© Shopsphere</div>
+  </footer>
+
+  <!-- Chatbot icon & window (added; rest of file unchanged) -->
+  <style>
+    /* Lightweight chat UI — uses different IDs than the CSS rule above so it is visible */
+    #chatbotIcon { position: fixed; right: 20px; bottom: 20px; width:56px; height:56px; border-radius:50%; background: linear-gradient(90deg,#ff6f88,#ff8fa0); display:flex; align-items:center; justify-content:center; color:#fff; font-size:22px; box-shadow:0 12px 30px rgba(255,111,136,0.18); cursor:pointer; z-index:120; }
+    #chatWindow { position: fixed; right: 92px; bottom: 22px; width:320px; max-width: calc(100% - 48px); background:#fff; border-radius:12px; box-shadow:0 18px 40px rgba(0,0,0,0.12); overflow:hidden; display:none; z-index:120; }
+    #chatWindow header{ padding:12px 14px; background: linear-gradient(90deg,#ff6f88,#ff8fa0); color:#fff; display:flex; justify-content:space-between; align-items:center; }
+    #chatWindow .messages{ padding:12px; max-height:240px; overflow:auto; background:#faf5f7; }
+    #chatWindow .chat-input{ display:flex; gap:8px; padding:10px; border-top:1px solid #f2f0f1; background:#fff; }
+    #chatWindow .chat-input input{ flex:1; padding:8px 10px; border-radius:8px; border:1px solid #eee; outline:none; }
+    @media (max-width:720px){ #chatWindow{ right:12px; left:12px; bottom:86px; width:auto; } }
+  </style>
+
+  <div id="chatbotIcon" role="button" aria-label="Open chat" title="Chat with us">💬</div>
+
+  <div id="chatWindow" role="dialog" aria-label="Chat window">
+    <header>
+      <span>Beauty Bot</span>
+      <button id="closeChat" aria-label="Close chat" style="background:transparent;border:0;color:#fff;font-weight:700;cursor:pointer">✕</button>
+    </header>
+    <div class="messages" id="chatMessages">
+      <div style="background:#fff;padding:10px;border-radius:10px;display:inline-block;max-width:80%;box-shadow:0 6px 18px rgba(0,0,0,0.04);">Hi! Need help choosing a product?</div>
+    </div>
+    <div class="chat-input">
+      <input id="chatInput" placeholder="Type a message..." aria-label="Type a message">
+      <button id="chatSend" class="search-btn" style="padding:8px 10px;border-radius:8px">Send</button>
+    </div>
+  </div>
+
+  <script>
+    // Search wiring (same logic as before)
+    document.getElementById("searchBtnProducts").addEventListener("click", () => {
+      const searchTerm = document.getElementById("searchBarProducts").value.toLowerCase();
+      if (searchTerm.trim() === "") {
+        alert("Please enter a product name to search.");
+        return;
+      }
+      const src = window.allProducts || [];
+      const filtered = src.filter(product => (product.name||'').toLowerCase().includes(searchTerm));
+      if (window.renderProducts) window.renderProducts(filtered, document.getElementById("products-list"));
+    });
+
+    document.getElementById("clearBtnProducts").addEventListener("click", () => {
+      document.getElementById("searchBarProducts").value = "";
+      if (window.allProducts && window.renderProducts) window.renderProducts(window.allProducts, document.getElementById("products-list"));
+    });
+
+    document.getElementById("searchBarProducts").addEventListener("keypress", (e) => {
+      if (e.key === "Enter") document.getElementById("searchBtnProducts").click();
+    });
+
+    // Minimal chat behavior
+    (function(){
+      const icon = document.getElementById('chatbotIcon');
+      const win = document.getElementById('chatWindow');
+      const closeBtn = document.getElementById('closeChat');
+      const sendBtn = document.getElementById('chatSend');
+      const input = document.getElementById('chatInput');
+      const msgs = document.getElementById('chatMessages');
+
+      icon.addEventListener('click', () => { win.style.display = (win.style.display === 'block') ? 'none' : 'block'; });
+      closeBtn.addEventListener('click', () => { win.style.display = 'none'; });
+
+      function send() {
+        const v = input.value.trim();
+        if (!v) return;
+        const u = document.createElement('div');
+        u.style.cssText = 'background:linear-gradient(90deg,#ff8aa0,#ff5f7f);color:#fff;padding:8px 12px;border-radius:12px;display:inline-block;max-width:80%;margin:8px 0;';
+        u.textContent = v;
+        msgs.appendChild(u);
+        input.value = '';
+        msgs.scrollTop = msgs.scrollHeight;
+        setTimeout(()=> {
+          const b = document.createElement('div');
+          b.style.cssText = 'background:#fff;padding:10px;border-radius:10px;display:inline-block;max-width:80%;box-shadow:0 6px 18px rgba(0,0,0,0.04);margin:8px 0;';
+          b.textContent = 'Thanks! We will reply soon. Meanwhile check our featured products.';
+          msgs.appendChild(b);
+          msgs.scrollTop = msgs.scrollHeight;
+        }, 700);
+      }
+
+      sendBtn.addEventListener('click', send);
+      input.addEventListener('keypress', (e) => { if (e.key === 'Enter') send(); });
+    })();
+  </script>
+
+  <!-- Chatbot icon -->
+  <div class="chatbot-icon" id="chatbotToggle" role="button" aria-label="Open chat" title="Chat with us">💬</div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+// UPDATED_INDEX.JS_SNIPPET.js
+// 
+// This file shows the EXACT CHANGES needed to integrate the session-based
+// cart system into your existing index.js
+// 
+// INSTRUCTIONS:
+// 1. Copy the imports section below (add to the top)
+// 2. Replace your old session configuration with the new session setup
+// 3. Add the middleware section right after session setup
+// 4. Add the routes section before app.listen()
+// 5. Make sure app.set('db', db) is called
+// 
+
+// ================================================================
+// SECTION 1: ADD THESE IMPORTS AT THE TOP (after existing imports)
+// ================================================================
+
+const sessionConfig = require('./config/sessionConfig');
+const { initializeGuestCart, trackGuestSession, attachSessionData } = require('./middleware/cartMiddleware');
+const authRoutes = require('./routes/authRoutes');
+const cartRoutes = require('./routes/cartRoutes');
+
+
+// ================================================================
+// SECTION 2: REPLACE OLD SESSION SETUP (around line 24-33)
+// ================================================================
+
+// OLD CODE TO REMOVE:
+/*
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'shopsphere-secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false,
+    maxAge: 24 * 60 * 60 * 1000
+  }
+}));
+*/
+
+// NEW CODE TO ADD:
+const sessionSetup = sessionConfig(db);
+app.use(sessionSetup.middleware);
+
+// Store db connection globally for controllers to access
+app.set('db', db);
+
+// ================================================================
+// SECTION 3: ADD CART MIDDLEWARE (after session setup)
+// ================================================================
+
+// Initialize guest cart and tracking
+app.use(initializeGuestCart);
+app.use(trackGuestSession);
+app.use(attachSessionData);
+
+
+// ================================================================
+// SECTION 4: ADD ROUTES (before app.listen, around line 750)
+// ================================================================
+
+// API Routes for Authentication and Cart
+app.use('/api/auth', authRoutes);
+app.use('/api/cart', cartRoutes);
+
+
+// ================================================================
+// SECTION 5: COMPLETE CODE EXAMPLE
+// ================================================================
+
+/*
+
+const bcrypt = require("bcrypt");
+const express = require("express");
+const cors = require("cors");
+const mysql = require("mysql2");
+const bodyParser = require("body-parser");
+const multer = require("multer");
+const { spawn } = require("child_process");
+const path = require("path");
+const fs = require("fs");
+const session = require('express-session');
+
+// ===== NEW IMPORTS =====
+const sessionConfig = require('./config/sessionConfig');
+const { initializeGuestCart, trackGuestSession, attachSessionData } = require('./middleware/cartMiddleware');
+const authRoutes = require('./routes/authRoutes');
+const cartRoutes = require('./routes/cartRoutes');
+
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
+
+const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS, 10) || 10;
+
+app.use(express.static(path.join(__dirname, '../public')));
+
+// ===== UPDATED SESSION SETUP =====
+// NOTE: sessionConfig(db) must be called AFTER db is initialized
+// So move this to after the db.connect() callback completes
+
+// Configure multer for image uploads
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowedMimes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+    if (allowedMimes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only JPEG, PNG, and WebP images are allowed'));
+    }
+  }
+});
+
+const db = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "Nimra123",
+  database: "Shopsphere"
+});
+
+db.connect(err => {
+  if (err) {
+    console.log("DB Error:", err);
+  } else {
+    console.log("MySQL Connected");
+    
+    // ===== SETUP SESSION MIDDLEWARE WITH DB STORE =====
+    const sessionSetup = sessionConfig(db);
+    app.use(sessionSetup.middleware);
+    
+    // Store db connection for controller access
+    app.set('db', db);
+    
+    // Initialize cart middleware
+    app.use(initializeGuestCart);
+    app.use(trackGuestSession);
+    app.use(attachSessionData);
+    
+    // Ensure admin table exists
+    const createAdminTable = `
+      CREATE TABLE IF NOT EXISTS admins (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) DEFAULT NULL,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `;
+    db.query(createAdminTable, (err) => {
+      if (err) console.error("Failed to ensure admins table:", err);
+      else console.log("Admins table ready");
+    });
+  }
+});
+
+// ... rest of your existing code ...
+
+// ===== ADD ROUTES BEFORE app.listen() =====
+app.use('/api/auth', authRoutes);
+app.use('/api/cart', cartRoutes);
+
+app.listen(3000, () => console.log("Server running on http://localhost:3000"));
+
+*/

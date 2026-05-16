@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Shopsphere</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css" />
+  <style>
+    :root {
+      --primary-dark: #0a0f1f;
+      --secondary-dark: #0f1729;
+      --card-dark: #1a2847;
+      --accent: #E91E8C;
+      --accent-light: #FF4DB8;
+      --text-primary: #f1f5fb;
+      --text-secondary: #b0b9c8;
+      --text-muted: #8a92a1;
+      --border: rgba(224, 230, 242, 0.1);
+      --success: #10b981;
+      --warning: #f59e0b;
+      --info: #3b82f6;
+      --spacing-xs: 4px;
+      --spacing-sm: 8px;
+      --spacing-md: 12px;
+      --spacing-lg: 16px;
+      --spacing-xl: 24px;
+      --spacing-2xl: 28px;
+      --spacing-3xl: 36px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto;
+      color: var(--text-primary);
+      background: linear-gradient(135deg, var(--primary-dark) 0%, #0d1425 50%, #0a0f1f 100%);
+      overflow-x: hidden;
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+      background: var(--primary-dark);
+    }
+
+    /* ========== SIDEBAR ========== */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 280px;
+      height: 100vh;
+      background: linear-gradient(180deg, rgba(15, 23, 41, 0.95) 0%, rgba(10, 15, 31, 0.98) 100%);
+      backdrop-filter: blur(10px);
+      border-right: 1px solid var(--border);
+      padding: var(--spacing-xl) var(--spacing-lg);
+      overflow-y: auto;
+      z-index: 100;
+      box-shadow: -4px 0 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .sidebar::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .sidebar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb {
+      background: rgba(224, 230, 242, 0.1);
+      border-radius: 3px;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb:hover {
+      background: rgba(224, 230, 242, 0.2);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-2xl);
+      padding-bottom: var(--spacing-xl);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo img {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+    }
+
+    .logo h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-sm);
+    }
+
+    .nav a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: var(--spacing-md) var(--spacing-lg);
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+
+    .nav a::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 0;
+      background: linear-gradient(180deg, var(--accent) 0%, var(--accent-light) 100%);
+      border-radius: 0 3px 3px 0;
+      transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .nav a:hover {
+      color: var(--text-primary);
+      background: rgba(233, 30, 140, 0.08);
+      border-color: rgba(233, 30, 140, 0.15);
+    }
+
+    .nav a:hover::before {
+      height: 24px;
+    }
+
+    .nav a.active {
+      color: var(--accent);
+      background: linear-gradient(135deg, rgba(233, 30, 140, 0.15) 0%, rgba(233, 30, 140, 0.08) 100%);
+      border-color: rgba(233, 30, 140, 0.25);
+      font-weight: 600;
+    }
+
+    .nav a.active::before {
+      height: 24px;
+    }
+
+    .nav-icon {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .nav a.danger {
+      color: #ff6b9d;
+      margin-top: var(--spacing-lg);
+      border-top: 1px solid var(--border);
+      padding-top: var(--spacing-lg);
+    }
+
+    .nav a.danger:hover {
+      background: rgba(255, 107, 157, 0.08);
+      color: #ff6b9d;
+    }
+
+    /* ========== MAIN CONTENT ========== */
+    .main {
+      flex: 1;
+      margin-left: 280px;
+      padding: var(--spacing-2xl) var(--spacing-3xl);
+      background: var(--primary-dark);
+      overflow-y: auto;
+    }
+
+    .main::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .main::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .main::-webkit-scrollbar-thumb {
+      background: rgba(224, 230, 242, 0.08);
+      border-radius: 4px;
+    }
+
+    .main::-webkit-scrollbar-thumb:hover {
+      background: rgba(224, 230, 242, 0.15);
+    }
+
+    /* ========== PROFILE BUTTON (FIXED) ========== */
+    .profile-section {
+      position: fixed;
+      top: var(--spacing-lg);
+      right: var(--spacing-lg);
+      z-index: 150;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+    }
+
+    /* ========== WELCOME SECTION ========== */
+    .welcome-section {
+      margin-bottom: var(--spacing-3xl);
+      animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .welcome-message {
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--text-primary) 0%, rgba(241, 245, 251, 0.8) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0 0 var(--spacing-md) 0;
+      letter-spacing: -0.5px;
+    }
+
+    .welcome-subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .profile-section {
+      position: fixed;
+      top: var(--spacing-lg);
+      right: var(--spacing-lg);
+      z-index: 150;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+    }
+
+    .profile-info {
+      display: none;
+    }
+
+    .profile-name {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text-primary);
+    }
+
+    .profile-role {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .profile-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: transparent;
+      border: 2px solid rgba(233, 30, 140, 0.3);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+
+    .profile-avatar:hover {
+      border-color: var(--accent);
+      transform: scale(1.05);
+      background: rgba(233, 30, 140, 0.08);
+    }
+
+    /* Dropdown Menu */
+    .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      background: linear-gradient(135deg, var(--card-dark) 0%, rgba(26, 40, 71, 0.8) 100%);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      min-width: 200px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+      display: none;
+      z-index: 200;
+      animation: slideDown 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .dropdown-menu.active {
+      display: block;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .dropdown-item {
+      padding: var(--spacing-md) var(--spacing-lg);
+      border: none;
+      background: none;
+      color: var(--text-secondary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dropdown-item:last-child {
+      border-bottom: none;
+    }
+
+    .dropdown-item:hover {
+      background: rgba(233, 30, 140, 0.1);
+      color: var(--accent);
+    }
+
+    .dropdown-item.danger {
+      color: #ff6b9d;
+    }
+
+    .dropdown-item.danger:hover {
+      background: rgba(255, 107, 157, 0.1);
+      color: #ff6b9d;
+    }
+
+    /* ========== DASHBOARD GRID ========== */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: var(--spacing-xl);
+      margin-bottom: var(--spacing-2xl);
+    }
+
+    .col-3 { grid-column: span 3; }
+    .col-4 { grid-column: span 4; }
+    .col-6 { grid-column: span 6; }
+    .col-12 { grid-column: span 12; }
+
+    /* ========== CARDS ========== */
+    .card {
+      background: linear-gradient(135deg, rgba(26, 40, 71, 0.4) 0%, rgba(15, 23, 41, 0.2) 100%);
+      border: 1px solid var(--border);
+      padding: var(--spacing-xl);
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), inset 1px 1px 0 rgba(255, 255, 255, 0.05);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(233, 30, 140, 0.1) 0%, transparent 70%);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .card:hover {
+      border-color: rgba(233, 30, 140, 0.2);
+      background: linear-gradient(135deg, rgba(26, 40, 71, 0.5) 0%, rgba(15, 23, 41, 0.3) 100%);
+      box-shadow: 0 16px 40px rgba(233, 30, 140, 0.1), 0 8px 24px rgba(0, 0, 0, 0.3), inset 1px 1px 0 rgba(255, 255, 255, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    /* ========== STAT CARDS ========== */
+    .stat-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .stat-content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-sm);
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+
+    .stat-change {
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .stat-change.positive {
+      color: var(--success);
+    }
+
+    .stat-change.negative {
+      color: #f87171;
+    }
+
+    .stat-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+
+    .stat-icon.sales {
+      background: linear-gradient(135deg, rgba(233, 30, 140, 0.2) 0%, rgba(233, 30, 140, 0.08) 100%);
+      color: var(--accent);
+    }
+
+    .stat-icon.orders {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.08) 100%);
+      color: var(--info);
+    }
+
+    .stat-icon.users {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.08) 100%);
+      color: var(--success);
+    }
+
+    .stat-icon.stock {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(245, 158, 11, 0.08) 100%);
+      color: var(--warning);
+    }
+
+    /* ========== QUICK ACTIONS ========== */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--spacing-lg);
+    }
+
+    .quick-action-btn {
+      padding: var(--spacing-lg);
+      background: linear-gradient(135deg, rgba(233, 30, 140, 0.15) 0%, rgba(233, 30, 140, 0.05) 100%);
+      border: 1px solid rgba(233, 30, 140, 0.2);
+      border-radius: 10px;
+      color: var(--accent);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-md);
+      font-family: inherit;
+    }
+
+    .quick-action-btn:hover {
+      background: linear-gradient(135deg, rgba(233, 30, 140, 0.25) 0%, rgba(233, 30, 140, 0.1) 100%);
+      border-color: rgba(233, 30, 140, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(233, 30, 140, 0.15);
+    }
+
+    .quick-action-icon {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ========== RECENT ORDERS ========== */
+    .recent-orders-container {
+      overflow: auto;
+      max-height: 400px;
+    }
+
+    .recent-orders-container::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .recent-orders-container::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .recent-orders-container::-webkit-scrollbar-thumb {
+      background: rgba(224, 230, 242, 0.1);
+      border-radius: 3px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      color: var(--text-primary);
+    }
+
+    thead {
+      position: sticky;
+      top: 0;
+      background: linear-gradient(135deg, rgba(26, 40, 71, 0.6) 0%, rgba(15, 23, 41, 0.4) 100%);
+      z-index: 10;
+    }
+
+    th {
+      padding: var(--spacing-md) var(--spacing-lg);
+      text-align: left;
+      font-weight: 600;
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: var(--spacing-md) var(--spacing-lg);
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    tbody tr {
+      transition: all 0.2s ease;
+    }
+
+    tbody tr:hover {
+      background: rgba(233, 30, 140, 0.05);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+
+    .status-badge.pending {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--warning);
+    }
+
+    .status-badge.shipped {
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--info);
+    }
+
+    .status-badge.delivered {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 1400px) {
+      .col-3 { grid-column: span 4; }
+    }
+
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 240px;
+      }
+
+      .main {
+        margin-left: 240px;
+        padding: var(--spacing-xl) var(--spacing-2xl);
+      }
+
+      .col-3, .col-4 { grid-column: span 6; }
+      .col-6 { grid-column: span 12; }
+
+      .quick-actions {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        left: -280px;
+        width: 280px;
+        transition: left 0.3s ease;
+        height: 100%;
+        z-index: 1000;
+      }
+
+      .sidebar.open {
+        left: 0;
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+      }
+
+      .main {
+        margin-left: 0;
+        padding: var(--spacing-xl) var(--spacing-lg);
+      }
+
+      .grid {
+        gap: var(--spacing-lg);
+      }
+
+      .col-3, .col-4, .col-6 {
+        grid-column: span 12;
+      }
+
+      .quick-actions {
+        grid-template-columns: 1fr;
+      }
+
+
+
+      .stat-value {
+        font-size: 24px;
+      }
+
+      .card {
+        padding: var(--spacing-lg);
+      }
+
+      table {
+        font-size: 12px;
+      }
+
+      td, th {
+        padding: var(--spacing-sm) var(--spacing-md);
+      }
+    }
+
+    @media (max-width: 480px) {
+
+
+      .stat-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 24px;
+      }
+
+      .stat-value {
+        font-size: 20px;
+      }
+
+
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="logo">
+        <img src="../images/shopsphere-logo.svg" alt="ShopSphere">
+        <h3>ShopSphere</h3>
+      </div>
+      <nav class="nav">
+        <a href="/admin/dashboard" class="active">
+          <div class="nav-icon">📊</div>
+          <span>Dashboard</span>
+        </a>
+        <a href="/admin/products">
+          <div class="nav-icon">📦</div>
+          <span>Products</span>
+        </a>
+        <a href="/admin/banners">
+          <div class="nav-icon">🎨</div>
+          <span>Banners</span>
+        </a>
+        <a href="/admin/orders">
+          <div class="nav-icon">🛒</div>
+          <span>Orders</span>
+        </a>
+        <a href="/admin/users">
+          <div class="nav-icon">👥</div>
+          <span>Users</span>
+        </a>
+        <a href="/admin/settings" class="danger">
+          <div class="nav-icon">⚙️</div>
+          <span>Settings</span>
+        </a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="profile-section">
+      <div class="profile-avatar" id="profile-avatar">A</div>
+        <div class="dropdown-menu" id="profile-dropdown">
+          <a href="#" class="dropdown-item">
+            <span>👤</span>
+            <span>My Profile</span>
+          </a>
+          <a href="#" class="dropdown-item">
+            <span>⚙️</span>
+            <span>Settings</span>
+          </a>
+          <button class="dropdown-item danger" id="logout-btn">
+            <span>🚪</span>
+            <span>Logout</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Welcome Section -->
+      <div class="welcome-section">
+        <h1 class="welcome-message" id="welcome-message">Welcome, %%ADMIN_NAME%%!</h1>
+        <p class="welcome-subtitle">Here's what's happening with your business today</p>
+      </div>
+
+      <!-- Stats Grid -->
+      <section class="grid">
+        <div class="card col-3 stat-card-clickable" data-detail="sales" style="cursor: pointer;">
+          <div class="stat-card">
+            <div class="stat-content">
+              <div class="stat-label">Total Sales</div>
+              <div class="stat-value" id="total-sales">—</div>
+              <div class="stat-change positive">↑ 12.5%</div>
+            </div>
+            <div class="stat-icon sales">💰</div>
+          </div>
+        </div>
+
+        <div class="card col-3 stat-card-clickable" data-detail="orders-today" style="cursor: pointer;">
+          <div class="stat-card">
+            <div class="stat-content">
+              <div class="stat-label">Orders Today</div>
+              <div class="stat-value" id="orders-today">—</div>
+              <div class="stat-change positive">↑ 8.2%</div>
+            </div>
+            <div class="stat-icon orders">📦</div>
+          </div>
+        </div>
+
+        <div class="card col-3 stat-card-clickable" data-detail="users" style="cursor: pointer;">
+          <div class="stat-card">
+            <div class="stat-content">
+              <div class="stat-label">Active Users</div>
+              <div class="stat-value" id="active-users">—</div>
+              <div class="stat-change positive">↑ 5.1%</div>
+            </div>
+            <div class="stat-icon users">👥</div>
+          </div>
+        </div>
+
+        <div class="card col-3 stat-card-clickable" data-detail="low-stock" style="cursor: pointer;">
+          <div class="stat-card">
+            <div class="stat-content">
+              <div class="stat-label">Low Stock Items</div>
+              <div class="stat-value" id="low-stock">—</div>
+              <div class="stat-change negative">↓ Attention Needed</div>
+            </div>
+            <div class="stat-icon stock">⚠️</div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card col-12">
+          <h3 style="margin: 0 0 var(--spacing-lg) 0; font-size: 16px; font-weight: 600;">Quick Actions</h3>
+          <div class="quick-actions">
+            <button class="quick-action-btn" onclick="location.href='/admin/add-product'">
+              <div class="quick-action-icon">➕</div>
+              <span>Add Product</span>
+            </button>
+            <button class="quick-action-btn" onclick="location.href='/admin/banners'">
+              <div class="quick-action-icon">🎨</div>
+              <span>Add Banner</span>
+            </button>
+            <button class="quick-action-btn" onclick="location.href='/admin/orders'">
+              <div class="quick-action-icon">👁️</div>
+              <span>View Orders</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="card col-12">
+          <h3 style="margin: 0 0 var(--spacing-lg) 0; font-size: 16px; font-weight: 600;">Recent Orders</h3>
+          <div class="recent-orders-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="recent-orders">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Dropdown toggle
+    const profileAvatar = document.getElementById('profile-avatar');
+    const profileDropdown = document.getElementById('profile-dropdown');
+
+    profileAvatar.addEventListener('click', (e) => {
+      e.stopPropagation();
+      profileDropdown.classList.toggle('active');
+    });
+
+    document.addEventListener('click', () => {
+      profileDropdown.classList.remove('active');
+    });
+
+    // Stats
+    async function fetchAdminInfo() {
+      try {
+        // endpoint returns {id,email,name}
+        const res = await fetch('/admin/me', { credentials: 'include' });
+        if (res.ok) {
+          const data = await res.json();
+          return data.name || data.email || null;
+        }
+      } catch (e) {
+        console.log('Could not fetch admin info', e.message);
+      }
+      return null;
+    }
+
+    async function fetchStats() {
+      try {
+        const res = await fetch('/admin/stats', { credentials: 'include' });
+        if (!res.ok) throw new Error('Failed to fetch stats');
+        return await res.json();
+      } catch (e) {
+        return {
+          name: 'Administrator',
+          email: 'admin@shopsphere.com',
+          totalSales: 12450,
+          ordersToday: 23,
+          activeUsers: 312,
+          lowStock: 7,
+          recentOrders: [
+            { id: 1007, customer: 'Jane D', total: 72, status: 'Shipped', date: '2024-01-15' },
+            { id: 1006, customer: 'Mark P', total: 24, status: 'Pending', date: '2024-01-14' },
+            { id: 1005, customer: 'Alex R', total: 199, status: 'Delivered', date: '2024-01-13' },
+            { id: 1004, customer: 'Sarah M', total: 145, status: 'Shipped', date: '2024-01-12' },
+            { id: 1003, customer: 'John L', total: 89, status: 'Delivered', date: '2024-01-11' }
+          ]
+        };
+      }
+    }
+
+    function render(stats) {
+      const adminName = stats.name || stats.email || 'Administrator';
+      const firstLetter = adminName.charAt(0).toUpperCase();
+      document.getElementById('profile-avatar').textContent = firstLetter;
+      // if server already placed a name, only update if different
+      const welcomeEl = document.getElementById('welcome-message');
+      if (!welcomeEl.textContent.includes(adminName)) {
+        welcomeEl.textContent = `Welcome, ${adminName}!`;
+      }
+      document.getElementById('total-sales').textContent = 'Rs.' + (stats.totalSales || 0).toLocaleString();
+      document.getElementById('orders-today').textContent = (stats.ordersToday || 0).toLocaleString();
+      document.getElementById('active-users').textContent = (stats.activeUsers || 0).toLocaleString();
+      document.getElementById('low-stock').textContent = (stats.lowStock || 0).toLocaleString();
+
+      const tbody = document.getElementById('recent-orders');
+      tbody.innerHTML = '';
+      (stats.recentOrders || []).slice(0, 8).forEach(o => {
+        const tr = document.createElement('tr');
+        const statusClass = o.status.toLowerCase();
+        tr.innerHTML = `
+          <td>#${o.id}</td>
+          <td>${o.customer || '—'}</td>
+          <td>Rs.${o.total}</td>
+          <td><span class="status-badge ${statusClass}">${o.status}</span></td>
+          <td>${o.date || '—'}</td>
+        `;
+        tr.style.cursor = 'pointer';
+        tr.addEventListener('click', () => {
+          window.location.href = `/admin/order-detail/${o.id}`;
+        });
+        tbody.appendChild(tr);
+      });
+
+    }
+
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      await fetch('/admin/logout', { method: 'POST' }).catch(() => {});
+      window.location = '/admin/login';
+    });
+
+    // Add click handlers to stat cards
+    document.querySelectorAll('.stat-card-clickable').forEach(card => {
+      card.addEventListener('click', () => {
+        const type = card.getAttribute('data-detail');
+        window.location.href = `/admin/details/${type}`;
+      });
+    });
+
+    (async () => {
+      const [stats, adminName] = await Promise.all([fetchStats(), fetchAdminInfo()]);
+      if (adminName) {
+        stats.name = adminName;
+      }
+      render(stats);
+    })();
+
+    // Set active nav link
+    document.querySelectorAll('.nav a').forEach(link => {
+      if (link.href === window.location.href) {
+        link.classList.add('active');
+      }
+    });
+  </script>
+</body>
+</html>

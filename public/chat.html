@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat - Shopsphere</title>
+  
+  <!-- Disable Live Server auto-reload -->
+  <script>
+    if (window.location.pathname.includes('chat.html')) {
+      // Block page reload messages from Live Server
+      window.addEventListener('beforeunload', function(e) {
+        // Don't prevent - just for logging
+      });
+      console.log('Chat page loaded - auto-reload disabled');
+    }
+  </script>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+    }
+
+    body {
+      font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial;
+      background: linear-gradient(135deg, #e8eff4, #dce6ee);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .chat-header {
+      background: #C84771;
+      color: #fff;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: none;
+      flex-shrink: 0;
+    }
+
+    .chat-header-left {
+      position: absolute;
+      left: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .chat-header-right {
+      position: absolute;
+      right: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .chat-header-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      object-fit: contain;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 4px;
+    }
+
+    .chat-header-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .chat-header h1 {
+      display: none;
+    }
+
+    .chat-header-center {
+      position: relative;
+      left: auto;
+      top: auto;
+      transform: none;
+      text-align: center;
+      pointer-events: none;
+      z-index: 5;
+      min-width: auto;
+    }
+
+    .chat-header-center h2 {
+      margin: 0;
+      font-size: 26px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.2px;
+      pointer-events: none;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Times New Roman', Times, serif;
+    }
+
+    .chat-header-center .emoji {
+      font-size: 24px;
+    }
+
+    .page-subtitle {
+      text-align: center;
+      color: #636e72;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 8px;
+      margin-bottom: 6px;
+      pointer-events: none;
+      text-shadow: none;
+    }
+
+    .rotating-title {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 28px;
+      font-weight: 700;
+      color: #C84771;
+      text-align: center;
+      z-index: 10;
+      min-width: 300px;
+      animation: fadeInOut 4s infinite;
+      display: none;
+      pointer-events: none;
+    }
+
+    .rotating-title.show {
+      display: block;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+      10% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      35% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      40% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+    }
+
+    .close-chat-btn {
+      background: #C84771;
+      border: none;
+      color: #fff;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .close-chat-btn:hover {
+      background: #a83a5a;
+      transform: scale(1.1);
+    }
+
+    .close-chat-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* About button */
+    .about-chat-btn {
+      background: #C84771;
+      border: none;
+      color: #fff;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .about-chat-btn:hover {
+      background: #a83a5a;
+      transform: scale(1.1);
+    }
+
+    .about-chat-btn:active {
+      transform: scale(0.95);
+    }
+
+    .about-btn-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transform: translateY(-3px);
+    }
+
+    .about-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #fff;
+      white-space: nowrap;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Modal styles */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background: #fff;
+      border-radius: 16px;
+      max-width: 700px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: slideUp 0.3s ease;
+      position: relative;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-header {
+      background: #C84771;
+      color: #fff;
+      padding: 20px 24px;
+      border-radius: 16px 16px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+      box-shadow: 8px 8px 16px #d4738f, -8px -8px 16px #ffffff;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .modal-close {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: #fff;
+      font-size: 28px;
+      cursor: pointer;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .modal-section {
+      margin-bottom: 28px;
+    }
+
+    .modal-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .modal-section h3 {
+      color: #C84771;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-section ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .modal-section li {
+      padding: 8px 0;
+      color: #333;
+      font-size: 14px;
+      line-height: 1.6;
+      border-bottom: 1px solid #eee;
+    }
+
+    .modal-section li:last-child {
+      border-bottom: none;
+    }
+
+    .modal-section li:before {
+      content: "✓ ";
+      color: #C84771;
+      font-weight: 700;
+      margin-right: 8px;
+    }
+
+    .limitation-box {
+      background: #E8F0F4;
+      border-left: 4px solid #C84771;
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin: 8px 0;
+      font-size: 14px;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .limitation-box strong {
+      color: #C84771;
+    }
+
+    .help-step {
+      background: #f5f5f5;
+      padding: 12px;
+      border-radius: 8px;
+      margin: 8px 0;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .help-step strong {
+      color: #C84771;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .disease-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 12px 0;
+    }
+
+    .disease-badge {
+      background: #E8F0F4;
+      border: 2px solid #C84771;
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+      font-weight: 600;
+      color: #C84771;
+      font-size: 14px;
+    }
+
+
+    /* Messages container */
+    .chat-messages-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0.95), rgba(250, 245, 247, 0.98));
+    }
+
+    .messages-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Message styles */
+    .message {
+      display: flex;
+      animation: slideIn 0.4s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message.user {
+      justify-content: flex-end;
+    }
+
+    .message.bot {
+      justify-content: flex-start;
+    }
+
+    .message-bubble {
+      max-width: 70%;
+      padding: 12px 16px;
+      border-radius: 16px;
+      word-wrap: break-word;
+      line-height: 1.5;
+      font-size: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .message.user .message-bubble {
+      background: #C84771;
+      color: #fff;
+      border-bottom-right-radius: 4px;
+      box-shadow: 8px 8px 16px #d4738f, -8px -8px 16px #ffffff;
+    }
+
+    .message.bot .message-bubble {
+      background: #E8F0F4;
+      color: #1a1a1a;
+      border-bottom-left-radius: 4px;
+      box-shadow: 8px 8px 16px #d4738f, -8px -8px 16px #ffffff;
+      border: 1px solid #C84771;
+    }
+
+    .message-bubble img {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: 12px;
+      margin: 8px 0;
+      display: block;
+    }
+
+    .prediction-result {
+      background: #E8F0F4;
+      color: #1a1a1a;
+      padding: 12px 16px;
+      border-radius: 16px;
+      word-wrap: break-word;
+      line-height: 1.5;
+      font-size: 15px;
+      box-shadow: 8px 8px 16px #d4738f, -8px -8px 16px #ffffff;
+      border-bottom-left-radius: 4px;
+      border: 1px solid #C84771;
+    }
+
+    .prediction-disease {
+      font-weight: 700;
+      font-size: 16px;
+      margin: 8px 0;
+    }
+
+    .prediction-confidence {
+      opacity: 0.9;
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    /* Typing indicator */
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 12px 16px;
+      background: #fff;
+      border-radius: 16px;
+      width: fit-content;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #C84771;
+      animation: bounce 1.4s infinite;
+    }
+
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes bounce {
+      0%, 80%, 100% {
+        transform: translateY(0);
+        opacity: 0.6;
+      }
+      40% {
+        transform: translateY(-8px);
+        opacity: 1;
+      }
+    }
+
+    /* Input area */
+    .chat-input-area {
+      padding: 16px 20px;
+      background: #fff;
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
+      display: flex;
+      gap: 12px;
+      flex-shrink: 0;
+      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    .chat-input-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      background: #f8f8f8;
+      border-radius: 24px;
+      padding: 0 16px;
+      border: 2px solid #e0e0e0;
+      transition: all 0.3s ease;
+    }
+
+    .chat-input-wrapper:focus-within {
+      border-color: #C84771;
+      background: #E8F0F4;
+      box-shadow: inset 4px 4px 8px #d4738f, inset -4px -4px 8px #ffffff;
+    }
+
+    .chat-input-wrapper input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 12px 0;
+      outline: none;
+      font-size: 15px;
+      font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto;
+      color: #333;
+    }
+
+    .chat-input-wrapper input::placeholder {
+      color: #999;
+    }
+
+    .chat-send-btn {
+      background: #C84771;
+      color: #fff;
+      border: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      font-weight: 700;
+      box-shadow: none;
+    }
+
+    .chat-send-btn:hover {
+      transform: scale(1.05);
+      background: #a83a5a;
+    }
+
+    .chat-send-btn:active {
+      transform: scale(0.95);
+    }
+
+    .chat-send-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Add button */
+    .chat-add-btn {
+      background: #C84771;
+      color: #fff;
+      border: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      font-weight: 700;
+      box-shadow: none;
+      flex-shrink: 0;
+    }
+
+    .chat-add-btn:hover {
+      transform: scale(1.05);
+      background: #a83a5a;
+    }
+
+    .chat-add-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* Scrollbar styling */
+    .chat-messages-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .chat-messages-container::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .chat-messages-container::-webkit-scrollbar-thumb {
+      background: rgba(255, 111, 136, 0.3);
+      border-radius: 4px;
+    }
+
+    .chat-messages-container::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 111, 136, 0.5);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .chat-header h1 {
+        font-size: 20px;
+      }
+
+      .message-bubble {
+        max-width: 85%;
+      }
+
+      .chat-input-area {
+        padding: 12px 16px;
+      }
+
+      .chat-input-wrapper {
+        padding: 0 12px;
+      }
+
+      .chat-input-wrapper input {
+        padding: 10px 0;
+        font-size: 14px;
+      }
+
+      .close-chat-btn,
+      .chat-send-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+      }
+
+      .products-grid {
+        grid-template-columns: 1fr !important;
+      }
+
+      .product-card {
+        max-width: 100% !important;
+      }
+    }
+
+    /* ============== PRODUCT CARDS STYLES ============== */
+    .products-container {
+      max-width: 100%;
+      padding: 0;
+    }
+
+    .products-header {
+      background: linear-gradient(135deg, #C84771, #d4738f);
+      color: white;
+      padding: 16px;
+      border-radius: 8px 8px 0 0;
+      font-weight: 600;
+      font-size: 16px;
+      text-align: center;
+      margin-bottom: 0;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      padding: 16px;
+      background: white;
+      border-radius: 0 0 8px 8px;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    .products-grid::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .products-grid::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+
+    .products-grid::-webkit-scrollbar-thumb {
+      background: #C84771;
+      border-radius: 3px;
+    }
+
+    .products-grid::-webkit-scrollbar-thumb:hover {
+      background: #a83a5a;
+    }
+
+    .product-card {
+      background: #f9f9f9;
+      border: 1px solid #e8e8e8;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      max-width: 280px;
+      display: flex;
+      flex-direction: column;
+      height: fit-content;
+    }
+
+    .product-card:hover {
+      box-shadow: 0 4px 16px rgba(200, 71, 113, 0.15);
+      border-color: #C84771;
+      transform: translateY(-2px);
+    }
+
+    .product-image {
+      width: 100%;
+      height: 180px;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .product-card:hover .product-image img {
+      transform: scale(1.05);
+    }
+
+    .product-info {
+      padding: 12px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .product-name {
+      font-weight: 600;
+      color: #1a1a1a;
+      font-size: 14px;
+      line-height: 1.3;
+      max-height: 40px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .product-description {
+      font-size: 12px;
+      color: #636e72;
+      line-height: 1.3;
+      max-height: 32px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .product-price {
+      font-size: 15px;
+      font-weight: 700;
+      color: #C84771;
+      margin-top: 4px;
+    }
+
+    .product-action {
+      padding: 12px;
+      border-top: 1px solid #e8e8e8;
+      display: flex;
+      gap: 8px;
+    }
+
+    .view-product-btn {
+      flex: 1;
+      padding: 10px 16px;
+      background: linear-gradient(135deg, #C84771, #d4738f);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .view-product-btn:hover {
+      background: linear-gradient(135deg, #a83a5a, #b8556d);
+      transform: scale(1.02);
+      box-shadow: 0 4px 12px rgba(200, 71, 113, 0.3);
+    }
+
+    .view-product-btn:active {
+      transform: scale(0.98);
+    }
+
+    .view-product-btn::before {
+      content: '→';
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="chat-header">
+    <div class="chat-header-left">
+      <div class="about-btn-wrapper">
+        <button class="about-chat-btn" id="aboutChatBtn" title="About">💡</button>
+        <span class="about-label">About</span>
+      </div>
+    </div>
+
+    <div class="chat-header-center">
+      <h2>
+        <span>DermaAI</span>
+        <span class="emoji">🤖🌸</span>
+      </h2>
+    </div>
+
+    <div class="chat-header-right">
+      <button class="close-chat-btn" id="closeChatPageBtn" title="Close chat">✕</button>
+    </div>
+  </header>
+
+  <div class="page-subtitle">AI-Powered Skin Assistant</div>
+
+  <!-- Rotating title (center page) -->
+  <div class="rotating-title" id="rotatingTitle"></div>
+
+  <!-- Messages -->
+  <div class="chat-messages-container">
+    <div class="messages-inner" id="chatMessagesInner">
+    </div>
+  </div>
+
+  <!-- Hidden file input for image upload -->
+<label for="imageUploadInput" style="display:none;">Upload image</label>
+<input
+  type="file"
+  id="imageUploadInput"
+  accept="image/*"
+  style="display: none;"
+/>
+  <!-- Input -->
+  <div class="chat-input-area">
+<button
+  class="chat-add-btn"
+  id="chatAddBtn"
+  title="Add attachment"
+  type="button"
+>
+  +
+</button>
+    <div class="chat-input-wrapper">
+      <input
+        type="text"
+        id="chatInputField"
+        placeholder="Type your message..."
+        aria-label="Type your message"
+      />
+    </div>
+    <button class="chat-send-btn" id="chatSendBtnPage" title="Send message">➤</button>
+  </div>
+
+  <!-- About Modal -->
+  <div class="modal-overlay" id="aboutModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>💡 About DermaAI</h2>
+        <button class="modal-close" id="closeAboutModal">✕</button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- Diseases -->
+        <div class="modal-section">
+          <h3>🏥 Detectable Skin Conditions</h3>
+          <p style="color: #666; font-size: 13px; margin-bottom: 12px;">Our AI model can detect the following skin conditions:</p>
+          <div class="disease-grid">
+            <div class="disease-badge">Acne</div>
+            <div class="disease-badge">Eczema</div>
+            <div class="disease-badge">Rosacea</div>
+            <div class="disease-badge">Keratosis</div>
+            <div class="disease-badge">Milia</div>
+            <div class="disease-badge">Carcinoma</div>
+          </div>
+        </div>
+
+        <!-- How to Use -->
+        <div class="modal-section">
+          <h3>📸 How to Analyze Your Skin</h3>
+          <div class="help-step">
+            <strong>Step 1: Locate the + Button</strong>
+            Look at the bottom left of the chat. Click the <strong>+</strong> button to open image upload.
+          </div>
+          <div class="help-step">
+            <strong>Step 2: Select an Image</strong>
+            Choose a clear photo of the skin area you want to analyze. Make sure lighting is good.
+          </div>
+          <div class="help-step">
+            <strong>Step 3: Wait for Analysis</strong>
+            The image will be uploaded and analyzed by our AI model (takes 2-3 seconds).
+          </div>
+          <div class="help-step">
+            <strong>Step 4: View Results</strong>
+            You'll see the detected condition, confidence score, and recommendations.
+          </div>
+        </div>
+
+        <!-- Limitations -->
+        <div class="modal-section">
+          <h3>⚠️ Chatbot Limitations</h3>
+          <div class="limitation-box">
+            <strong>🤖 AI Assistant Role:</strong> This chatbot uses general responses for most questions. For detailed skincare advice, ask about specific skin conditions or upload an image.
+          </div>
+          <div class="limitation-box">
+            <strong>📷 Image Analysis Only:</strong> The AI works best with uploaded images. Try to provide clear, well-lit photos for accurate results.
+          </div>
+          <div class="limitation-box">
+            <strong>💬 Limited Conversation:</strong> Chat responses are pre-defined. Ask about skin analysis or products for better results.
+          </div>
+        </div>
+
+        <!-- Model Limitations -->
+        <div class="modal-section">
+          <h3>🔍 Model Limitations & Accuracy</h3>
+          <div class="limitation-box">
+            <strong>Accuracy Range:</strong> The model achieves 85%+ accuracy on trained conditions. However, accuracy may vary based on image quality.
+          </div>
+          <div class="limitation-box">
+            <strong>Not a Replacement:</strong> AI predictions are <strong>NOT a medical diagnosis</strong>. Always consult a dermatologist for professional evaluation.
+          </div>
+          <div class="limitation-box">
+            <strong>Image Quality Matters:</strong> Poor lighting, angles, or resolution can affect accuracy. Clear, close-up photos work best.
+          </div>
+          <div class="limitation-box">
+            <strong>Similar Conditions:</strong> Some conditions like acne and eczema can be confused if they're borderline. System flags uncertain predictions.
+          </div>
+          <div class="limitation-box">
+            <strong>Single Photo:</strong> Diagnosis based on one image only. Multiple photos from different angles improve accuracy.
+          </div>
+          <div class="limitation-box">
+            <strong>Unknown Conditions:</strong> The model may struggle with rare conditions or conditions it wasn't trained on.
+          </div>
+        </div>
+
+        <!-- Tips for Best Results -->
+        <div class="modal-section">
+          <h3>✨ Tips for Best Results</h3>
+          <ul>
+            <li>Use <strong>natural lighting</strong> (avoid shadows)</li>
+            <li>Take <strong>clear, close-up photos</strong> of the affected area</li>
+            <li>Ensure the <strong>image is in focus</strong></li>
+            <li>Provide <strong>multiple angles</strong> if possible</li>
+            <li>Use <strong>JPG or PNG format</strong> images</li>
+            <li><strong>Consult a dermatologist</strong> for final diagnosis</li>
+          </ul>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="modal-section" style="background: #fff3e0; padding: 12px; border-radius: 8px; border-left: 4px solid #ff9800;">
+          <strong style="color: #ff9800; display: block; margin-bottom: 8px;">⚡ Important Disclaimer</strong>
+          <p style="margin: 0; font-size: 13px; color: #333; line-height: 1.6;">
+            This AI tool is for <strong>informational purposes only</strong> and should <strong>NOT</strong> be used as a substitute for professional medical advice, diagnosis, or treatment. Always consult with a qualified dermatologist for any skin concerns. The creators are not responsible for any misuse or reliance on this tool.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const messagesContainer = document.getElementById('chatMessagesInner');
+      const inputField = document.getElementById('chatInputField');
+      const sendBtn = document.getElementById('chatSendBtnPage');
+      const closeBtn = document.getElementById('closeChatPageBtn');
+      const addBtn = document.getElementById('chatAddBtn');
+      const imageUploadInput = document.getElementById('imageUploadInput');
+      const aboutBtn = document.getElementById('aboutChatBtn');
+      const aboutModal = document.getElementById('aboutModal');
+      const closeAboutModalBtn = document.getElementById('closeAboutModal');
+
+      console.log('Chat script initialized');
+      console.log('addBtn element:', addBtn);
+      console.log('messagesContainer:', messagesContainer);
+
+      // Prevent page reload/navigation while uploading
+      window.addEventListener('beforeunload', (e) => {
+        // Don't prevent unload - let it happen naturally
+      });
+
+      // Sample bot responses
+      const botResponses = [
+        "That's a great question! Let me help you with that.",
+        "I'd recommend checking our skincare collection for your needs.",
+        "Thank you for your interest! Is there anything else I can help with?",
+        "Our products are carefully curated for beauty and skincare. Would you like specific recommendations?",
+        "I'm here to help! Feel free to ask about any product or skincare concern.",
+        "Shopsphere has a wide range of beauty and skincare products. What are you looking for today?"
+      ];
+
+    // Rotating title messages (center page)
+    const headerMessages = [
+      "How can I help you?",
+      "Ask me anything! 😊",
+      "Looking for skincare tips?"
+    ];
+    
+    let currentHeaderIndex = 0;
+    let titleInterval = null;
+    const rotatingTitle = document.getElementById('rotatingTitle');
+    
+    function showRotatingTitles() {
+      rotatingTitle.classList.add('show');
+      currentHeaderIndex = 0;
+      rotatingTitle.textContent = headerMessages[currentHeaderIndex];
+      
+      titleInterval = setInterval(() => {
+        currentHeaderIndex = (currentHeaderIndex + 1) % headerMessages.length;
+        rotatingTitle.textContent = headerMessages[currentHeaderIndex];
+      }, 2000);
+    }
+    
+    function hideRotatingTitles() {
+      rotatingTitle.classList.remove('show');
+      if (titleInterval) clearInterval(titleInterval);
+    }
+
+    // Show titles on page load
+    showRotatingTitles();
+
+    function addMessage(text, isUser = false) {
+      // Hide rotating titles when user starts chatting
+      hideRotatingTitles();
+      
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+      
+      const bubbleDiv = document.createElement('div');
+      bubbleDiv.className = 'message-bubble';
+      bubbleDiv.textContent = text;
+      
+      messageDiv.appendChild(bubbleDiv);
+      messagesContainer.appendChild(messageDiv);
+      
+      // Auto scroll to bottom
+      setTimeout(() => {
+        messagesContainer.parentElement.scrollTop = messagesContainer.parentElement.scrollHeight;
+      }, 0);
+    }
+
+    function showTypingIndicator() {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message bot';
+      messageDiv.id = 'typingIndicator';
+      
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'typing-indicator';
+      typingDiv.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+      
+      messageDiv.appendChild(typingDiv);
+      messagesContainer.appendChild(messageDiv);
+      
+      setTimeout(() => {
+        messagesContainer.parentElement.scrollTop = messagesContainer.parentElement.scrollHeight;
+      }, 0);
+    }
+
+    function removeTypingIndicator() {
+      const typing = document.getElementById('typingIndicator');
+      if (typing) typing.remove();
+    }
+
+    function sendMessage() {
+      const text = inputField.value.trim();
+      if (!text) return;
+
+      // Add user message
+      addMessage(text, true);
+      inputField.value = '';
+      sendBtn.disabled = true;
+
+      // Show typing indicator
+      showTypingIndicator();
+
+      // Simulate bot response delay
+      setTimeout(() => {
+        removeTypingIndicator();
+        const randomResponse = botResponses[Math.floor(Math.random() * botResponses.length)];
+        addMessage(randomResponse, false);
+        sendBtn.disabled = false;
+      }, 700);
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    inputField.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    // Close button - go back to previous page
+    if (closeBtn) {
+      closeBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.history.back();
+      });
+    }
+
+    // Image upload handler - setup + button
+    if (addBtn) {
+      addBtn.addEventListener('click', async (e) => {
+        console.log('+ button clicked!', e);
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        
+        const inputFile = document.createElement('input');
+        inputFile.type = 'file';
+        inputFile.accept = 'image/*';
+        console.log('File input created, opening picker...');
+        inputFile.onchange = async () => {
+          console.log('File selected:', inputFile.files);
+          if (inputFile.files.length === 0) return;
+          const file = inputFile.files[0];
+        
+        // Show image preview
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+          console.log('Image loaded for preview');
+          
+          // Hide rotating titles immediately
+          hideRotatingTitles();
+          
+          const imageUrl = event.target.result;
+          
+          // Add user's image to chat
+          const userMsg = document.createElement('div');
+          userMsg.className = 'message user';
+          const userBubble = document.createElement('div');
+          userBubble.className = 'message-bubble';
+          const img = document.createElement('img');
+          img.src = imageUrl;
+          img.style.maxWidth = '200px';
+          img.style.borderRadius = '8px';
+          userBubble.appendChild(img);
+          userMsg.appendChild(userBubble);
+          messagesContainer.appendChild(userMsg);
+          
+          // Show typing indicator
+          showTypingIndicator();
+          
+          const formData = new FormData();
+          formData.append('image', file);
+
+          console.log('Sending fetch request to /api/predict-skin');
+          try {
+            const res = await fetch('http://localhost:3000/api/predict-skin', {method: 'POST', body: formData});
+            console.log('Fetch response received:', res.status, res.statusText);
+            const result = await res.json();
+            console.log('JSON parsed:', result);
+            removeTypingIndicator();
+
+            if (result.success) {
+              const msg = document.createElement('div');
+              msg.className = 'message bot';
+              const bubble = document.createElement('div');
+              bubble.className = 'prediction-result';
+              
+              const disease = document.createElement('div');
+              disease.className = 'prediction-disease';
+              disease.textContent = `🔍 Detected: ${result.disease}`;
+              
+              const confidence = document.createElement('div');
+              confidence.className = 'prediction-confidence';
+              confidence.textContent = `Confidence: ${(result.confidence*100).toFixed(2)}%`;
+              
+              const rec = document.createElement('div');
+              rec.className = 'prediction-recommendation';
+              rec.textContent = `💡 ${result.recommendations}`;
+              
+              bubble.appendChild(disease);
+              bubble.appendChild(confidence);
+              bubble.appendChild(rec);
+              msg.appendChild(bubble);
+              messagesContainer.appendChild(msg);
+              messagesContainer.parentElement.scrollTop = messagesContainer.parentElement.scrollHeight;
+
+              // Fetch and display product recommendations for the detected condition
+              try {
+                const productsRes = await fetch(`http://localhost:3000/api/products/recommend?condition=${encodeURIComponent(result.disease)}`);
+                const productsData = await productsRes.json();
+
+                if (productsData.success && productsData.products.length > 0) {
+                  // Create products container message
+                  const productsMsg = document.createElement('div');
+                  productsMsg.className = 'message bot';
+                  const productsContainer = document.createElement('div');
+                  productsContainer.className = 'products-container';
+
+                  // Add header
+                  const productsHeader = document.createElement('div');
+                  productsHeader.className = 'products-header';
+                  productsHeader.textContent = `✨ Recommended Products for ${result.disease}`;
+                  productsContainer.appendChild(productsHeader);
+
+                  // Create grid for products
+                  const productsGrid = document.createElement('div');
+                  productsGrid.className = 'products-grid';
+
+                  // Add each product as a card
+                  productsData.products.forEach(product => {
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+
+                    // Product image
+                    const imgWrapper = document.createElement('div');
+                    imgWrapper.className = 'product-image';
+                    const img = document.createElement('img');
+                    img.src = product.image;
+                    img.alt = product.name;
+                    img.onerror = function() { this.src = '/images/placeholder.jpg'; };
+                    imgWrapper.appendChild(img);
+
+                    // Product info
+                    const infoDiv = document.createElement('div');
+                    infoDiv.className = 'product-info';
+
+                    const nameDiv = document.createElement('div');
+                    nameDiv.className = 'product-name';
+                    nameDiv.textContent = product.name;
+
+                    const descDiv = document.createElement('div');
+                    descDiv.className = 'product-description';
+                    descDiv.textContent = product.description;
+
+                    const priceDiv = document.createElement('div');
+                    priceDiv.className = 'product-price';
+                    priceDiv.textContent = `PKR ${product.price}`;
+
+                    infoDiv.appendChild(nameDiv);
+                    infoDiv.appendChild(descDiv);
+                    infoDiv.appendChild(priceDiv);
+
+                    // View Product button
+                    const btnDiv = document.createElement('div');
+                    btnDiv.className = 'product-action';
+                    const viewBtn = document.createElement('a');
+                    viewBtn.href = product.link;
+                    viewBtn.className = 'view-product-btn';
+                    viewBtn.textContent = 'View Product';
+                    viewBtn.target = '_self';
+                    btnDiv.appendChild(viewBtn);
+
+                    card.appendChild(imgWrapper);
+                    card.appendChild(infoDiv);
+                    card.appendChild(btnDiv);
+
+                    productsGrid.appendChild(card);
+                  });
+
+                  productsContainer.appendChild(productsGrid);
+                  productsMsg.appendChild(productsContainer);
+                  messagesContainer.appendChild(productsMsg);
+                } else {
+                  // No products found message
+                  const noproducts = document.createElement('div');
+                  noproducts.className = 'message bot';
+                  const nobubble = document.createElement('div');
+                  nobubble.className = 'message-bubble';
+                  nobubble.textContent = `No products available for ${result.disease}. Please check back soon!`;
+                  noproducts.appendChild(nobubble);
+                  messagesContainer.appendChild(noproducts);
+                }
+
+                messagesContainer.parentElement.scrollTop = messagesContainer.parentElement.scrollHeight;
+              } catch (productErr) {
+                console.error('Error fetching products:', productErr);
+                const errMsg = document.createElement('div');
+                errMsg.className = 'message bot';
+                const errBubble = document.createElement('div');
+                errBubble.className = 'message-bubble';
+                errBubble.textContent = 'Could not fetch product recommendations. Please try again.';
+                errMsg.appendChild(errBubble);
+                messagesContainer.appendChild(errMsg);
+                messagesContainer.parentElement.scrollTop = messagesContainer.parentElement.scrollHeight;
+              }
+            } else {
+              removeTypingIndicator();
+              addMessage(`❌ Error: ${result.error || 'Prediction failed'}`, false);
+            }
+          } catch(err) {
+            removeTypingIndicator();
+            console.error('Image upload error:', err);
+            console.error('Error message:', err.message);
+            console.error('Error stack:', err.stack);
+            addMessage(`❌ Server error: ${err.message}`, false);
+          }
+        };
+        reader.readAsDataURL(file);
+      };
+      inputFile.click();
+      });
+    }
+
+    // Focus input on load
+    inputField.focus();
+
+    // About Modal functionality
+    if (aboutBtn) {
+      aboutBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        aboutModal.classList.add('show');
+      });
+    }
+
+    if (closeAboutModalBtn) {
+      closeAboutModalBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        aboutModal.classList.remove('show');
+      });
+    }
+
+    // Close modal when clicking outside
+    aboutModal.addEventListener('click', (e) => {
+      if (e.target === aboutModal) {
+        aboutModal.classList.remove('show');
+      }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && aboutModal.classList.contains('show')) {
+        aboutModal.classList.remove('show');
+      }
+    });
+
+    }); // End of DOMContentLoaded
+  </script>
+</body>
+</html>

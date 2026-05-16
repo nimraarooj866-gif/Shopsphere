@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Details - Shopsphere</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Neumorphic Chatbot Styles */
+    .chatbot-icon {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #E8F0F4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #C84771;
+      font-size: 22px;
+      box-shadow: 8px 8px 16px #d4738f, -8px -8px 16px #ffffff;
+      cursor: pointer;
+      z-index: 120;
+      transition: all 0.3s ease;
+      border: 2px solid #C84771;
+    }
+    .chatbot-icon:hover { transform: translateY(-2px); background: #D6E9F5; }
+    .chatbot-icon:active { transform: scale(0.96); box-shadow: inset 6px 6px 12px #d4738f, inset -6px -6px 12px #ffffff; }
+
+    .chat-window {
+      position: fixed;
+      right: 92px;
+      bottom: 22px;
+      width: 320px;
+      max-width: calc(100% - 48px);
+      background: #E8F0F4;
+      border-radius: 20px;
+      box-shadow: 12px 12px 24px #d4738f, -12px -12px 24px #ffffff;
+      overflow: hidden;
+      display: none;
+      z-index: 120;
+      border: 2px solid #C84771;
+    }
+    .chat-window.active { display: flex; flex-direction: column; }
+    .chat-window header {
+      padding: 12px 14px;
+      background: #E8F0F4;
+      color: #1a1a1a;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+    .chat-window .messages {
+      padding: 12px;
+      max-height: 240px;
+      overflow-y: auto;
+      background: #E8F0F4;
+      flex: 1;
+    }
+    .chat-window .chat-input {
+      display: flex;
+      gap: 8px;
+      padding: 10px;
+      border-top: 1px solid rgba(0,0,0,0.08);
+      background: #E8F0F4;
+    }
+    .chat-window input {
+      flex: 1;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 2px solid #C84771;
+      background: #E8F0F4;
+      color: #1a1a1a;
+      font-family: 'Poppins', sans-serif;
+      outline: none;
+      box-shadow: inset 4px 4px 8px #d4738f, inset -4px -4px 8px #ffffff;
+    }
+    .chat-window button {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: none;
+      background: #C84771;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: none;
+      transition: all 0.3s ease;
+    }
+    .chat-window button:hover { background: #a83a5a; }
+    .chat-window button:active { box-shadow: none; }
+    .close-chat {
+      background: transparent;
+      border: 0;
+      color: #1a1a1a;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .chat-window { right: 12px; left: 12px; bottom: 86px; width: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="brand-link" href="index.html">Shopsphere</a>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="products.html">Products</a>
+        <a href="cart.html">Cart</a>
+        <a href="login.html">Login</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container product-detail-container">
+    <section class="product-detail">
+      <div class="product-media">
+        <img id="pd-image" class="product-main-image" src="" alt="Product image">
+      </div>
+      <div class="product-info">
+        <h2 id="pd-name">Product Name</h2>
+        <p id="pd-price"><b>Price:</b> Rs. 0</p>
+        <p id="pd-desc">Product description...</p>
+        <div class="product-actions">
+          <button id="pd-addcart" class="btn primary add-to-cart">Add to Cart</button>
+        </div>
+        <hr>
+        <div class="rating-summary">
+          <strong>Average rating:</strong> <span id="avg-rating">—</span>
+        </div>
+
+        <div class="comments-section">
+          <h3>Comments & Ratings</h3>
+          <div id="comments-list"></div>
+
+          <h4>Write a comment</h4>
+          <div class="comment-form">
+            <input id="comment-name" class="input" placeholder="Your name">
+            <textarea id="comment-text" class="input" rows="3" placeholder="Write your comment..."></textarea>
+            <div class="star-input" id="star-input" aria-label="rating">
+              <span data-value="1" class="star">☆</span>
+              <span data-value="2" class="star">☆</span>
+              <span data-value="3" class="star">☆</span>
+              <span data-value="4" class="star">☆</span>
+              <span data-value="5" class="star">☆</span>
+            </div>
+            <button id="submit-comment" class="btn primary">Submit</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function getQueryParam(name) {
+      const params = new URLSearchParams(window.location.search);
+      return params.get(name);
+    }
+
+    const productId = getQueryParam('id');
+    const pdImage = document.getElementById('pd-image');
+    const pdName = document.getElementById('pd-name');
+    const pdPrice = document.getElementById('pd-price');
+    const pdDesc = document.getElementById('pd-desc');
+    const pdAdd = document.getElementById('pd-addcart');
+    const commentsList = document.getElementById('comments-list');
+    const avgRatingEl = document.getElementById('avg-rating');
+
+    let currentProduct = null;
+
+    async function loadProduct() {
+      try {
+        const res = await fetch('http://localhost:3000/products');
+        const data = await res.json();
+        currentProduct = data.find(p => String(p.id) === String(productId));
+        if (!currentProduct) {
+          pdName.innerText = 'Product not found';
+          return;
+        }
+        pdImage.src = currentProduct.img || (`images/${currentProduct.image || ''}`) || 'images/default.png';
+        pdName.innerText = currentProduct.name;
+        pdPrice.innerHTML = `<b>Price:</b> Rs. ${currentProduct.price}`;
+        pdDesc.innerText = currentProduct.description || '';
+        // Use global addToCart if available so tick UI is used
+        pdAdd.addEventListener('click', (ev) => {
+          if (window.addToCart) {
+            window.addToCart({ id: currentProduct.id, name: currentProduct.name, price: currentProduct.price, image: currentProduct.img || currentProduct.image || '' }, pdAdd);
+          } else {
+            // fallback
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const existing = cart.find(i => String(i.id) === String(currentProduct.id));
+            if (existing) existing.quantity = (Number(existing.quantity)||1) + 1;
+            else cart.push({ id: currentProduct.id, name: currentProduct.name, price: currentProduct.price, quantity: 1, image: currentProduct.img || currentProduct.image || '' });
+            localStorage.setItem('cart', JSON.stringify(cart));
+            pdAdd.innerText = '✓ Added';
+            setTimeout(()=> pdAdd.innerText = 'Add to Cart', 1000);
+          }
+        });
+        renderComments();
+      } catch (err) {
+        console.error('Product load failed', err);
+      }
+    }
+
+    function getComments() {
+      try { return JSON.parse(localStorage.getItem('comments_' + productId)) || []; } catch(e){ return [];}
+    }
+    function saveComments(arr) { localStorage.setItem('comments_' + productId, JSON.stringify(arr)); }
+    function renderComments() {
+      const comments = getComments();
+      commentsList.innerHTML = '';
+      if (!comments.length) commentsList.innerHTML = '<p>No comments yet.</p>';
+      let sum = 0;
+      comments.forEach(c => {
+        sum += (c.rating || 0);
+        const div = document.createElement('div');
+        div.className = 'comment-item';
+        div.innerHTML = `<strong>${escapeHtml(c.name || 'Anonymous')}</strong> — ${renderStars(c.rating || 0)}<p>${escapeHtml(c.text)}</p>`;
+        commentsList.appendChild(div);
+      });
+      const avg = comments.length ? (sum / comments.length).toFixed(1) : '—';
+      avgRatingEl.innerText = avg;
+    }
+    function renderStars(n) {
+      let out = '';
+      for (let i=1;i<=5;i++) out += (i<=n) ? '★' : '☆';
+      return out;
+    }
+    function escapeHtml(s){ return String(s || '').replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+    const starInput = document.getElementById('star-input');
+    let selectedRating = 5;
+    if (starInput) {
+      starInput.addEventListener('click', (e) => {
+        const span = e.target.closest('span[data-value]');
+        if (!span) return;
+        selectedRating = Number(span.dataset.value);
+        updateStarUI();
+      });
+    }
+    function updateStarUI(){ Array.from(document.querySelectorAll('#star-input span')).forEach(s => { s.innerText = (Number(s.dataset.value) <= selectedRating) ? '★' : '☆'; }); }
+
+    document.getElementById('submit-comment').addEventListener('click', () => {
+      const name = document.getElementById('comment-name').value.trim() || 'Anonymous';
+      const text = document.getElementById('comment-text').value.trim();
+      if (!text) return alert('Please write a comment');
+      const comments = getComments();
+      comments.unshift({ name, text, rating: selectedRating, date: new Date().toISOString() });
+      saveComments(comments);
+      document.getElementById('comment-name').value = '';
+      document.getElementById('comment-text').value = '';
+      selectedRating = 5; updateStarUI();
+      renderComments();
+    });
+
+    loadProduct();
+  </script>
+
+  <!-- Chatbot Icon & Window -->
+  <div class="chatbot-icon" id="chatbotProduct" title="Chat with us">💬</div>
+  <!-- Chatbot icon -->
+  <div class="chatbot-icon" id="chatbotToggle" role="button" aria-label="Open chat" title="Chat with us">💬</div>
+
+  <script>
+  <script>
+    // Chatbot handled by script.js
+  </script>
+  <script src="script.js"></script>
+</body>
+</html>

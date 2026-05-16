@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales Details - Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css" />
+  <style>
+    :root {
+      --primary-dark: #0a0f1f;
+      --secondary-dark: #0f1729;
+      --card-dark: #1a2847;
+      --accent: #E91E8C;
+      --accent-light: #FF4DB8;
+      --text-primary: #f1f5fb;
+      --text-secondary: #b0b9c8;
+      --text-muted: #8a92a1;
+      --border: rgba(224, 230, 242, 0.1);
+      --success: #10b981;
+      --warning: #f59e0b;
+      --info: #3b82f6;
+      --spacing-xs: 4px;
+      --spacing-sm: 8px;
+      --spacing-md: 12px;
+      --spacing-lg: 16px;
+      --spacing-xl: 24px;
+      --spacing-2xl: 28px;
+      --spacing-3xl: 36px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto;
+      color: var(--text-primary);
+      background: linear-gradient(135deg, var(--primary-dark) 0%, #0d1425 50%, #0a0f1f 100%);
+      overflow-x: hidden;
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+      background: var(--primary-dark);
+    }
+
+    /* ========== SIDEBAR ========== */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 280px;
+      height: 100vh;
+      background: linear-gradient(180deg, rgba(15, 23, 41, 0.95) 0%, rgba(10, 15, 31, 0.98) 100%);
+      backdrop-filter: blur(10px);
+      border-right: 1px solid var(--border);
+      padding: var(--spacing-xl) var(--spacing-lg);
+      overflow-y: auto;
+      z-index: 100;
+      box-shadow: -4px 0 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .sidebar::-webkit-scrollbar { width: 6px; }
+    .sidebar::-webkit-scrollbar-track { background: transparent; }
+    .sidebar::-webkit-scrollbar-thumb { background: rgba(224, 230, 242, 0.1); border-radius: 3px; }
+    .sidebar::-webkit-scrollbar-thumb:hover { background: rgba(224, 230, 242, 0.2); }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-2xl);
+      padding-bottom: var(--spacing-xl);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo img {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+    }
+
+    .logo h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-sm);
+    }
+
+    .nav a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: var(--spacing-md) var(--spacing-lg);
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .nav a:hover {
+      color: var(--text-primary);
+      background: rgba(233, 30, 140, 0.08);
+    }
+
+    /* ========== MAIN CONTENT ========== */
+    .main {
+      margin-left: 280px;
+      padding: var(--spacing-3xl);
+      flex: 1;
+      overflow-y: auto;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .main::-webkit-scrollbar { width: 8px; }
+    .main::-webkit-scrollbar-track { background: transparent; }
+    .main::-webkit-scrollbar-thumb { background: rgba(224, 230, 242, 0.08); border-radius: 4px; }
+    .main::-webkit-scrollbar-thumb:hover { background: rgba(224, 230, 242, 0.15); }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-2xl);
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .back-btn {
+      background: linear-gradient(135deg, rgba(233, 30, 140, 0.15) 0%, rgba(233, 30, 140, 0.05) 100%);
+      border: 1px solid rgba(233, 30, 140, 0.2);
+      color: var(--accent);
+      padding: var(--spacing-sm) var(--spacing-lg);
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    .back-btn:hover {
+      background: linear-gradient(135deg, rgba(233, 30, 140, 0.25) 0%, rgba(233, 30, 140, 0.1) 100%);
+      border-color: rgba(233, 30, 140, 0.4);
+      transform: translateY(-2px);
+    }
+
+    /* ========== CARDS ========== */
+    .card {
+      background: linear-gradient(135deg, rgba(26, 40, 71, 0.4) 0%, rgba(15, 23, 41, 0.2) 100%);
+      border: 1px solid var(--border);
+      padding: var(--spacing-xl);
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    /* ========== TABLE ========== */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: var(--spacing-lg);
+    }
+
+    thead {
+      background: rgba(233, 30, 140, 0.08);
+    }
+
+    th {
+      padding: var(--spacing-md) var(--spacing-lg);
+      text-align: left;
+      font-weight: 600;
+      color: var(--text-primary);
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: var(--spacing-md) var(--spacing-lg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    tbody tr:hover {
+      background: rgba(233, 30, 140, 0.05);
+    }
+
+    tbody tr {
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    /* Status Badge */
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+
+    .status-badge.pending {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+    }
+
+    .status-badge.shipped {
+      background: rgba(59, 130, 246, 0.2);
+      color: var(--info);
+    }
+
+    .status-badge.delivered {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--success);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--spacing-lg);
+      margin-bottom: var(--spacing-2xl);
+    }
+
+    .stat-box {
+      background: linear-gradient(135deg, rgba(26, 40, 71, 0.4) 0%, rgba(15, 23, 41, 0.2) 100%);
+      border: 1px solid var(--border);
+      padding: var(--spacing-lg);
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 500;
+      text-transform: uppercase;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .loading {
+      text-align: center;
+      padding: var(--spacing-2xl);
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { width: 70px; padding: var(--spacing-lg) var(--spacing-sm); }
+      .sidebar .logo h3, .nav a span { display: none; }
+      .main { margin-left: 70px; padding: var(--spacing-lg); }
+      .header { flex-direction: column; gap: var(--spacing-lg); }
+      table { font-size: 12px; }
+      th, td { padding: var(--spacing-sm); }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">
+        <img src="../images/shopsphere-logo.svg" alt="ShopSphere">
+        <h3>ShopSphere</h3>
+      </div>
+      <nav class="nav">
+        <a href="/admin/dashboard">
+          <div class="nav-icon">📊</div>
+          <span>Dashboard</span>
+        </a>
+        <a href="/admin/products">
+          <div class="nav-icon">📦</div>
+          <span>Products</span>
+        </a>
+        <a href="/admin/banners">
+          <div class="nav-icon">🎨</div>
+          <span>Banners</span>
+        </a>
+        <a href="/admin/orders">
+          <div class="nav-icon">🛒</div>
+          <span>Orders</span>
+        </a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="header">
+        <h1>💰 Sales Details</h1>
+        <button class="back-btn" onclick="window.location.href='/admin/dashboard'">← Back to Dashboard</button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-label">Total Revenue</div>
+          <div class="stat-value" id="total-revenue">—</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Total Orders</div>
+          <div class="stat-value" id="total-orders">—</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Average Order Value</div>
+          <div class="stat-value" id="avg-order-value">—</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Completed Orders</div>
+          <div class="stat-value" id="completed-orders">—</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin: 0 0 var(--spacing-lg) 0;">All Orders</h3>
+        <div id="loading" class="loading">Loading orders...</div>
+        <table id="orders-table" style="display: none;">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="orders-body"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    async function loadSalesData() {
+      try {
+        const res = await fetch('/admin/sales-data', { credentials: 'include' });
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({ message: 'Unknown error' }));
+          throw new Error(errorData.message || `HTTP ${res.status}: ${res.statusText}`);
+        }
+        const data = await res.json();
+        renderData(data);
+      } catch (e) {
+        console.error('Error loading sales data:', e);
+        document.getElementById('loading').textContent = 'Error: ' + e.message + ' (Check browser console for details)';
+      }
+    }
+
+    function renderData(data) {
+      const orders = data.orders || [];
+      const totalRevenue = orders.reduce((sum, o) => sum + (Number(o.total) || 0), 0);
+      const completedCount = orders.filter(o => o.status === 'Delivered').length;
+      const avgValue = orders.length > 0 ? totalRevenue / orders.length : 0;
+
+      document.getElementById('total-revenue').textContent = 'Rs.' + totalRevenue.toLocaleString();
+      document.getElementById('total-orders').textContent = orders.length;
+      document.getElementById('avg-order-value').textContent = 'Rs.' + avgValue.toFixed(2);
+      document.getElementById('completed-orders').textContent = completedCount;
+
+      const tbody = document.getElementById('orders-body');
+      tbody.innerHTML = '';
+      orders.forEach(order => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>#${order.id}</td>
+          <td>${order.customer || '—'}</td>
+          <td>Rs.${(Number(order.total) || 0).toFixed(2)}</td>
+          <td><span class="status-badge ${(order.status || 'pending').toLowerCase()}">${order.status || 'Pending'}</span></td>
+          <td>${order.date || '—'}</td>
+        `;
+        tr.addEventListener('click', () => {
+          window.location.href = `/admin/order-detail/${order.id}`;
+        });
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('orders-table').style.display = 'table';
+    }
+
+    loadSalesData();
+  </script>
+</body>
+</html>

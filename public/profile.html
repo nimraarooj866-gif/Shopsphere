@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>My Profile | Shopsphere</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --bg-primary: #E8F0F4;
+      --bg-secondary: #D9E4E8;
+      --text-primary: #2d3436;
+      --text-secondary: #636e72;
+      --border-color: #C84771;
+      --card-shadow: 8px 8px 16px #d4738f, -8px -8px 16px #ffffff;
+      --header-bg: #C84771;
+      --accent: #C84771;
+      --accent-dark: #a83a5a;
+    }
+
+    html.dark-mode {
+      --bg-primary: #1e1e1e;
+      --bg-secondary: #2d2d2d;
+      --text-primary: #f0f0f0;
+      --text-secondary: #aaa;
+      --border-color: #C84771;
+      --card-shadow: 0 10px 25px rgba(0,0,0,.3);
+      --header-bg: #C84771;
+      --accent: #ff758c;
+      --accent-dark: #e8436f;
+    }
+
+    * { transition: background-color .2s, color .2s; }
+
+    body {
+      background: linear-gradient(135deg, #e8eff4, #dce6ee);
+      color: var(--text-primary);
+      font-family: 'Poppins', system-ui, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, #C84771, #a83a5a);
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 
+        0 8px 16px rgba(200, 71, 113, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+      border-radius: 0 0 20px 20px;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      width: 100%;
+    }
+
+    header h1 { color: #fff; font-size: 30px; font-weight: 700; margin: 0; font-family: 'Times New Roman', Times, serif; }
+
+    .header-left{ display:flex; align-items:center; gap:10px; }
+    .site-logo{ width:60px; height:auto; object-fit:contain; border-radius:4px; }
+
+    .header-nav { display: flex; gap: 20px; align-items: center; }
+    .header-nav a { text-decoration: none; font-weight: 600; color: #fff; }
+    .header-nav a:hover { color: rgba(255,255,255,0.8); }
+
+    .dark-mode-toggle {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.4);
+      color: #fff;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    html.dark-mode .dark-mode-toggle {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    /* Main */
+    .profile-wrap { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+
+    /* Tabs */
+    .profile-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      padding: 12px 20px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--text-secondary);
+      border-bottom: 3px solid transparent;
+    }
+
+    .tab-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Profile Card */
+    .profile-card {
+      background: var(--bg-primary);
+      border-radius: 20px;
+      padding: 30px;
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      box-shadow: var(--card-shadow);
+      border: 2px solid var(--border-color);
+    }
+
+    .profile-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #d4738f);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 34px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .profile-info h2 { margin: 0; font-size: 26px; }
+    .profile-info p { margin: 8px 0; color: var(--text-secondary); }
+
+    .profile-actions {
+      margin-top: 16px;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 10px 18px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .btn.primary { background: #C84771; color: #fff; }
+    .btn.secondary { background: #C84771; color: #fff; border: none; }
+
+    /* Sections */
+    .section {
+      margin-top: 35px;
+      background: var(--bg-primary);
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: var(--card-shadow);
+      border: 2px solid var(--border-color);
+    }
+
+    .section h3 { font-size: 20px; margin: 0 0 18px 0; }
+
+    .card-item {
+      background: rgba(255,255,255,0.4);
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      border-left: 4px solid var(--accent);
+    }
+
+    .empty-text { color: var(--text-secondary); font-style: italic; }
+
+    /* Settings Grid */
+    .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+
+    .settings-item {
+      background: var(--bg-secondary);
+      padding: 18px;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 2px solid var(--border-color);
+    }
+
+    .settings-item label { font-weight: 600; margin-bottom: 8px; display: block; }
+
+    .toggle-switch {
+      display: inline-block;
+      width: 50px;
+      height: 26px;
+      background: #ccc;
+      border-radius: 13px;
+      position: relative;
+      cursor: pointer;
+      transition: background .3s;
+    }
+
+    .toggle-switch.active { background: var(--accent); }
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      background: #fff;
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      transition: left .3s;
+    }
+    .toggle-switch.active::after { left: 26px; }
+
+    select {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 2px solid var(--border-color);
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* Social Links */
+    .social-links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+    .social-links a {
+      padding: 10px 16px;
+      background: rgba(200,71,113,0.1);
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .social-links a:hover { background: var(--accent); color: #fff; }
+
+    /* Order History */
+    .order-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 100px 80px;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-color);
+      align-items: center;
+    }
+    .order-row:last-child { border-bottom: none; }
+    .order-status { padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+    .order-status.completed { background: #c8e6c9; color: #2e7d32; }
+    .order-status.pending { background: #fff9c4; color: #f9a825; }
+
+    @media (max-width: 640px) {
+      header { padding: 12px 16px; flex-direction: column; gap: 12px; }
+      header h1 { font-size: 20px; }
+      .profile-card { flex-direction: column; text-align: center; }
+      .profile-tabs { flex-wrap: wrap; }
+      .tab-btn { padding: 10px 14px; font-size: 13px; }
+      .order-row { grid-template-columns: 1fr; }
+    }
+
+    /* Modal Styles */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+    .modal.active { display: flex; }
+    .modal-content {
+      background: var(--bg-primary);
+      border-radius: 16px;
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .modal-header h2 { margin: 0; font-size: 22px; }
+    .modal-close {
+      background: transparent;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--text-primary);
+    }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; margin-bottom: 8px; font-weight: 600; }
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    .form-group input:focus, .form-group textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(255,117,140,0.1);
+    }
+    .modal-footer { display: flex; gap: 10px; margin-top: 20px; }
+    .modal-footer .btn { padding: 10px 16px; margin-top: 0; }
+
+    /* Chatbot Styles */
+    .chatbot-icon {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(90deg, #ff6f88, #ff8fa0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 22px;
+      box-shadow: 0 12px 30px rgba(255, 111, 136, 0.18);
+      cursor: pointer;
+      z-index: 120;
+      transition: transform 0.2s;
+    }
+    .chatbot-icon:active { transform: scale(0.98); }
+
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-left">
+    <img src="images/shopsphere-logo.svg" alt="Shopsphere Beauty and Skincare Logo" class="site-logo">
+  </div>
+  <div class="header-nav">
+    <a href="index.html">Home</a>
+    <a href="products.html">Products</a>
+    <a href="cart.html">Cart</a>
+    <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode">🌙</button>
+  </div>
+</header>
+
+<main class="profile-wrap">
+  <!-- TAB NAVIGATION -->
+  <div class="profile-tabs">
+    <button class="tab-btn active" data-tab="profile">Profile</button>
+    <button class="tab-btn" data-tab="orders">Order History</button>
+    <button class="tab-btn" data-tab="settings">Settings</button>
+  </div>
+
+  <!-- TAB 1: PROFILE -->
+  <div id="profile" class="tab-content active">
+    <div class="profile-card">
+      <div class="profile-avatar" id="profile-avatar">U</div>
+      <div class="profile-info">
+        <h2 id="profile-name">User Name</h2>
+        <p id="profile-email">user@email.com</p>
+        <p id="profile-phone" style="color: var(--text-secondary);">+1 (555) 123-4567</p>
+        <div class="profile-actions">
+          <button class="btn primary" id="profile-logout">Logout</button>
+          <button class="btn secondary" onclick="document.querySelector('[data-tab=settings]').click()">Settings</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Saved Addresses -->
+    <div class="section">
+      <h3>💳 Saved Addresses</h3>
+      <div id="addresses"></div>
+    </div>
+
+    <!-- Account Details -->
+    <div class="section">
+      <h3>📋 Account Details</h3>
+      <div class="card-item">
+        <strong>Member Since:</strong>
+        <p id="member-since" style="margin: 8px 0 0 0; color: var(--text-secondary);">January 2024</p>
+      </div>
+      <div class="card-item">
+        <strong>Account Status:</strong>
+        <p style="margin: 8px 0 0 0; color: #4caf50; font-weight: 600;">✓ Active</p>
+      </div>
+      <div class="card-item">
+        <strong>Email Verification:</strong>
+        <p style="margin: 8px 0 0 0; color: #4caf50; font-weight: 600;">✓ Verified</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: ORDER HISTORY -->
+  <div id="orders" class="tab-content">
+    <div class="section">
+      <h3>📦 Your Orders</h3>
+      <div id="order-history"></div>
+    </div>
+  </div>
+
+  <!-- TAB 3: SETTINGS -->
+  <div id="settings" class="tab-content">
+    <!-- General Settings -->
+    <div class="section">
+      <h3>⚙️ General Settings</h3>
+      <div class="settings-grid">
+        <div class="settings-item">
+          <div>
+            <label>Dark Mode</label>
+            <p style="margin: 0; color: var(--text-secondary); font-size: 13px;">Enable dark theme</p>
+          </div>
+          <div class="toggle-switch" id="darkModeSwitch"></div>
+        </div>
+        <div class="settings-item">
+          <div>
+            <label>Email Notifications</label>
+            <p style="margin: 0; color: var(--text-secondary); font-size: 13px;">Receive order updates</p>
+          </div>
+          <div class="toggle-switch active" id="emailNotifs"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Privacy & Security -->
+    <div class="section">
+      <h3>🔒 Privacy & Security</h3>
+      <div class="settings-grid">
+
+        <div class="settings-item">
+          <div>
+            <label>Data Privacy</label>
+            <p style="margin: 0; color: var(--text-secondary); font-size: 13px;">Control your data</p>
+          </div>
+          <button class="btn secondary" data-modal="privacy" style="padding: 8px 14px; font-size: 12px;">Manage</button>
+        </div>
+        <div class="settings-item">
+          <div>
+            <label>Change Password</label>
+            <p style="margin: 0; color: var(--text-secondary); font-size: 13px;">Update your password</p>
+          </div>
+          <button class="btn secondary" data-modal="password" style="padding: 8px 14px; font-size: 12px;">Change</button>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- Account Actions -->
+    <div class="section">
+      <h3>⚡ Account Actions</h3>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button class="btn secondary" data-modal="delete">Delete Account</button>
+        <button class="btn secondary" data-modal="export">Export Data</button>
+        <button class="btn secondary" onclick="window.location.href='products.html'">View Wishlist</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- MODALS -->
+<!-- Change Password Modal -->
+<div class="modal" id="passwordModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Change Password</h2>
+      <button class="modal-close" data-close="passwordModal">✕</button>
+    </div>
+    <form id="passwordForm">
+      <div class="form-group">
+        <label>Current Password</label>
+        <input type="password" id="oldPassword" required placeholder="Enter your current password">
+      </div>
+      <div class="form-group">
+        <label>New Password</label>
+        <input type="password" id="newPassword" required placeholder="Enter new password">
+      </div>
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <input type="password" id="confirmPassword" required placeholder="Confirm new password">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn secondary" data-close="passwordModal">Cancel</button>
+        <button type="submit" class="btn primary">Update Password</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Data Privacy Modal -->
+<div class="modal" id="privacyModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Data Privacy Settings</h2>
+      <button class="modal-close" data-close="privacyModal">✕</button>
+    </div>
+    <div class="form-group">
+      <label>
+        <input type="checkbox" checked> Allow marketing emails
+      </label>
+    </div>
+    <div class="form-group">
+      <label>
+        <input type="checkbox" checked> Share browsing data for recommendations
+      </label>
+    </div>
+    <div class="form-group">
+      <label>
+        <input type="checkbox"> Allow third-party analytics
+      </label>
+    </div>
+    <div class="form-group">
+      <label>
+        <input type="checkbox"> Share data with partners
+      </label>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn secondary" data-close="privacyModal">Cancel</button>
+      <button type="button" class="btn primary" id="privacy-save">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Account Modal -->
+<div class="modal" id="deleteModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>⚠️ Delete Account</h2>
+      <button class="modal-close" data-close="deleteModal">✕</button>
+    </div>
+    <p style="color: #d32f2f; font-weight: 600; margin-bottom: 15px;">
+      This action cannot be undone. All your data will be permanently deleted.
+    </p>
+    <div class="form-group">
+      <label>Confirm with your password</label>
+      <input type="password" id="deletePassword" placeholder="Enter your password">
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn secondary" data-close="deleteModal">Cancel</button>
+      <button type="button" class="btn primary" style="background: #d32f2f;" id="delete-confirm">Delete Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- Export Data Modal -->
+<div class="modal" id="exportModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Export Your Data</h2>
+      <button class="modal-close" data-close="exportModal">✕</button>
+    </div>
+    <p style="color: var(--text-secondary); margin-bottom: 20px;">
+      Download a copy of your account data in JSON format. This includes your profile, orders, and preferences.
+    </p>
+    <div style="margin-bottom: 20px; padding: 15px; background: var(--bg-secondary); border-radius: 8px;">
+      <strong>Includes:</strong>
+      <ul style="margin: 8px 0; padding-left: 20px; color: var(--text-secondary);">
+        <li>Profile information</li>
+        <li>Order history</li>
+        <li>Saved addresses</li>
+        <li>Preferences & settings</li>
+      </ul>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn secondary" data-close="exportModal">Cancel</button>
+      <button type="button" class="btn primary" id="export-download">Download Data</button>
+    </div>
+  </div>
+</div>
+
+<!-- Order Details Modal -->
+<div class="modal" id="orderModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="orderModalTitle">Order Details</h2>
+      <button class="modal-close" data-close="orderModal">✕</button>
+    </div>
+    <div id="orderModalBody" style="color: var(--text-secondary);">
+      <!-- Order details will be populated here -->
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn secondary" data-close="orderModal">Close</button>
+      <button type="button" class="btn primary" onclick="window.location.href='products.html'">Continue Shopping</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API_BASE = 'http://localhost:3000';
+
+  // Modal Management
+  function openModal(modalId) {
+    const modal = document.getElementById(modalId + 'Modal');
+    if (modal) modal.classList.add('active');
+  }
+
+  function closeModal(modalId) {
+    const modal = document.getElementById(modalId + 'Modal');
+    if (modal) modal.classList.remove('active');
+  }
+
+  // Modal Event Listeners
+  document.querySelectorAll('[data-modal]').forEach(btn => {
+    btn.addEventListener('click', () => openModal(btn.dataset.modal));
+  });
+
+  document.querySelectorAll('[data-close]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const modalId = btn.dataset.close;
+      const modal = document.getElementById(modalId);
+      if (modal) modal.classList.remove('active');
+    });
+  });
+
+  // Close modal on outside click
+  document.querySelectorAll('.modal').forEach(modal => {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.remove('active');
+      }
+    });
+  });
+
+  // Change Password Handler
+  document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const oldPassword = document.getElementById('oldPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const user = JSON.parse(localStorage.getItem('user'));
+
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      alert('New passwords do not match');
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      alert('Password must be at least 6 characters');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE}/change-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: user.email,
+          oldPassword,
+          newPassword
+        })
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        alert('✓ Password changed successfully!');
+        // Update user in localStorage to persist the change
+        user.password = newPassword;
+        localStorage.setItem('user', JSON.stringify(user));
+        const modal = document.getElementById('passwordModal');
+        if (modal) modal.classList.remove('active');
+        document.getElementById('passwordForm').reset();
+      } else {
+        alert(data.message || 'Failed to change password');
+      }
+    } catch (err) {
+      console.error('Error:', err);
+      alert('Error: Could not connect to server. Make sure backend is running on http://localhost:3000');
+    }
+  });
+
+  // Two-Factor Auth Handler - REMOVED (feature disabled)
+
+  // Data Privacy Handler
+  document.getElementById('privacy-save').addEventListener('click', () => {
+    const prefs = {
+      marketing: document.querySelectorAll('#privacyModal input')[0].checked,
+      recommendations: document.querySelectorAll('#privacyModal input')[1].checked,
+      analytics: document.querySelectorAll('#privacyModal input')[2].checked,
+      partners: document.querySelectorAll('#privacyModal input')[3].checked
+    };
+    localStorage.setItem('privacy-prefs', JSON.stringify(prefs));
+    alert('✓ Privacy settings saved!');
+    closeModal('privacy');
+  });
+
+  // Delete Account Handler
+  document.getElementById('delete-confirm').addEventListener('click', async () => {
+    const password = document.getElementById('deletePassword').value;
+    const user = JSON.parse(localStorage.getItem('user'));
+
+    if (!password) {
+      alert('Please enter your password');
+      return;
+    }
+
+    if (!confirm('Are you absolutely sure? This cannot be undone.')) {
+      return;
+    }
+
+    try {
+      // For demo: just verify password matches and clear data
+      if (password === user.password) {
+        localStorage.removeItem('user');
+        alert('✓ Account deleted successfully');
+        window.location.href = 'index.html';
+      } else {
+        alert('Incorrect password');
+      }
+    } catch (err) {
+      console.error('Error:', err);
+      alert('Error deleting account');
+    }
+  });
+
+  // Export Data Handler
+  document.getElementById('export-download').addEventListener('click', () => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+    const addresses = JSON.parse(localStorage.getItem('savedAddress') || 'null');
+    const privacyPrefs = JSON.parse(localStorage.getItem('privacy-prefs') || '{}');
+
+    const exportData = {
+      user,
+      orders,
+      addresses,
+      privacyPrefs,
+      exportDate: new Date().toISOString()
+    };
+
+    const dataStr = JSON.stringify(exportData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `shopsphere-data-${Date.now()}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    alert('✓ Data exported successfully!');
+    closeModal('export');
+  });
+
+  // Dark Mode Logic
+  function initDarkMode() {
+    const isDark = localStorage.getItem('darkMode') === 'true';
+    if (isDark) {
+      document.documentElement.classList.add('dark-mode');
+      updateDarkModeUI(true);
+    }
+  }
+
+  function toggleDarkMode() {
+    const isDark = document.documentElement.classList.toggle('dark-mode');
+    localStorage.setItem('darkMode', isDark);
+    updateDarkModeUI(isDark);
+  }
+
+  function updateDarkModeUI(isDark) {
+    const toggle = document.getElementById('darkModeSwitch');
+    const btn = document.getElementById('darkModeToggle');
+    if (isDark) {
+      toggle.classList.add('active');
+      btn.textContent = '☀️';
+    } else {
+      toggle.classList.remove('active');
+      btn.textContent = '🌙';
+    }
+  }
+
+  document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+  document.getElementById('darkModeSwitch').addEventListener('click', toggleDarkMode);
+
+  // Tab Switching
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tabName = btn.dataset.tab;
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabName).classList.add('active');
+      btn.classList.add('active');
+    });
+  });
+
+  // Settings Handlers
+
+
+  document.getElementById('emailNotifs').addEventListener('click', function() {
+    this.classList.toggle('active');
+    localStorage.setItem('emailNotifs', this.classList.contains('active'));
+    alert(this.classList.contains('active') ? '✓ Email notifications enabled' : '✓ Email notifications disabled');
+  });
+
+  // Language is English and Currency is PKR (Rupees) only
+
+  // Load User Data
+  (function(){
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    if (!user) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    const name = user.name || user.email.split('@')[0];
+    document.getElementById('profile-name').textContent = name;
+    document.getElementById('profile-email').textContent = user.email;
+    document.getElementById('profile-phone').textContent = user.phone || '+1 (555) 123-4567';
+
+    const initials = name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+    document.getElementById('profile-avatar').textContent = initials;
+
+    // Member since
+    document.getElementById('member-since').textContent = new Date().toLocaleDateString();
+
+    // Load Addresses
+    const saved = JSON.parse(localStorage.getItem('savedAddress') || 'null');
+    const addressBox = document.getElementById('addresses');
+    if (saved) {
+      addressBox.innerHTML = `
+        <div class="card-item">
+          <strong>${saved.first} ${saved.last}</strong><br>
+          <small style="color: var(--text-secondary);">${saved.address}<br>${saved.city}, ${saved.postal}</small>
+        </div>`;
+    } else {
+      addressBox.innerHTML = `<p class="empty-text">No saved address found. <a href="checkout.html" style="color: #ff5f7f;">Add one now</a></p>`;
+    }
+
+    // Load Order History
+    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+    const orderBox = document.getElementById('order-history');
+    if (orders.length > 0) {
+      orderBox.innerHTML = orders.map((o, i) => `
+        <div class="order-row">
+          <div><strong>Order #${1000 + i}</strong><br><small style="color: var(--text-secondary);">${new Date(o.date || Date.now()).toLocaleDateString()}</small></div>
+          <div><strong>Items:</strong> ${o.items || 1}<br><strong>Total:</strong> Rs. ${o.total || 0}</div>
+          <div style="text-align: center;"><span class="order-status ${o.status || 'pending'}">${(o.status || 'pending').toUpperCase()}</span></div>
+          <button class="btn secondary view-order-btn" data-order-index="${i}" style="padding: 6px 10px; font-size: 12px;">View</button>
+        </div>
+      `).join('');
+
+      // Add click handlers to View buttons
+      document.querySelectorAll('.view-order-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const orderIndex = e.target.dataset.orderIndex;
+          const order = orders[orderIndex];
+          showOrderDetails(order, orderIndex);
+        });
+      });
+    } else {
+      orderBox.innerHTML = `<p class="empty-text">No orders yet. <a href="products.html" style="color: #ff5f7f;">Start shopping</a></p>`;
+    }
+
+    // Function to display order details in modal
+    function showOrderDetails(order, index) {
+      const modal = document.getElementById('orderModal');
+      const title = document.getElementById('orderModalTitle');
+      const body = document.getElementById('orderModalBody');
+
+      title.textContent = `Order #${1000 + index}`;
+      
+      const orderDate = new Date(order.date || Date.now()).toLocaleDateString();
+      const orderTime = new Date(order.date || Date.now()).toLocaleTimeString();
+      const status = (order.status || 'pending').toUpperCase();
+
+      body.innerHTML = `
+        <div class="card-item">
+          <strong>Order Number:</strong> #${1000 + index}
+        </div>
+        <div class="card-item">
+          <strong>Date & Time:</strong> ${orderDate} at ${orderTime}
+        </div>
+        <div class="card-item">
+          <strong>Status:</strong> <span class="order-status ${order.status || 'pending'}" style="padding: 4px 8px; border-radius: 4px; display: inline-block;">${status}</span>
+        </div>
+        <div class="card-item">
+          <strong>Total Items:</strong> ${order.items || 1}
+        </div>
+        <div class="card-item">
+          <strong>Subtotal:</strong> Rs. ${order.subtotal || order.total || 0}
+        </div>
+        <div class="card-item">
+          <strong>Shipping:</strong> Rs. 200
+        </div>
+        <div class="card-item">
+          <strong>Total Amount:</strong> Rs. ${(Number(order.total || 0) + 200)}
+        </div>
+        ${order.items_detail ? `
+          <div class="card-item">
+            <strong>Items:</strong><br>
+            ${order.items_detail.map(item => `<small>• ${item}</small><br>`).join('')}
+          </div>
+        ` : ''}
+        <div class="card-item">
+          <strong>Shipping Address:</strong><br>
+          <small>${order.address || 'Not specified'}</small>
+        </div>
+      `;
+
+      if (modal) modal.classList.add('active');
+    }
+
+    document.getElementById('profile-logout').addEventListener('click', () => {
+      localStorage.removeItem('user');
+      window.location.href = 'index.html';
+    });
+  })();
+
+  // Initialize Dark Mode
+  initDarkMode();
+
+  // Chatbot functionality
+  const chatToggle = document.getElementById('chatbotProfile');
+  const chatWindow = document.getElementById('chatWindowProfile');
+  const chatInput = chatWindow.querySelector('input');
+  const chatMessages = chatWindow.querySelector('.messages');
+  const chatSendBtn = chatWindow.querySelector('button[type="submit"]');
+  const closeChatBtn = chatWindow.querySelector('.close-chat');
+
+  chatToggle.addEventListener('click', () => {
+    const isVisible = chatWindow.style.display === 'block';
+    chatWindow.style.display = isVisible ? 'none' : 'block';
+    if (!isVisible) chatInput.focus();
+  });
+
+  closeChatBtn.addEventListener('click', () => {
+    chatWindow.style.display = 'none';
+  });
+
+  function sendMessage() {
+    const message = chatInput.value.trim();
+    if (!message) return;
+    
+    const msgDiv = document.createElement('div');
+    msgDiv.style.marginBottom = '8px';
+    msgDiv.style.textAlign = 'right';
+    msgDiv.innerHTML = `<div style="background: #ff6f88; color: #fff; padding: 8px 10px; border-radius: 8px; display: inline-block; max-width: 80%;">${message}</div>`;
+    chatMessages.appendChild(msgDiv);
+    
+    chatInput.value = '';
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+    setTimeout(() => {
+      const replyDiv = document.createElement('div');
+      replyDiv.style.marginBottom = '8px';
+      replyDiv.style.textAlign = 'left';
+      replyDiv.innerHTML = `<div style="background: var(--bg-secondary); padding: 8px 10px; border-radius: 8px; display: inline-block; max-width: 80%; color: var(--text-primary);">Thanks for reaching out! Our team will respond soon. 😊</div>`;
+      chatMessages.appendChild(replyDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }, 500);
+  }
+
+  chatSendBtn.addEventListener('click', sendMessage);
+  chatInput.addEventListener('keypress', (e) => e.key === 'Enter' && sendMessage());
+</script>
+
+<!-- Chatbot Icon & Window -->
+<div class="chatbot-icon" id="chatbotProfile" title="Chat with us">💬</div>
+<!-- Chatbot icon -->
+<div class="chatbot-icon" id="chatbotToggle" role="button" aria-label="Open chat" title="Chat with us">💬</div>
+
+<script src="script.js"></script>
+</body>
+</html>
